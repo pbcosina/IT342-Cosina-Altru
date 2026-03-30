@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# IT342-Cosina-Altru
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Description
+Altru is a full-stack fundraising platform with authentication. This Session 1 deliverable includes a Spring Boot REST backend and a ReactJS web app with register/login, protected dashboard access, and logout flow.
 
-## Available Scripts
+## Technologies Used
+- Backend:
+	- Java 21
+	- Spring Boot 3.5.11
+	- Maven
+	- Spring Security (JWT)
+	- Spring Data JPA
+	- MySQL
+	- BCrypt password encryption
+- Web:
+	- ReactJS (Create React App)
+	- React Router
+	- Axios
+- Mobile:
+	- Planned for succeeding sessions
 
-In the project directory, you can run:
+## Backend Naming Convention
+- Group ID: `edu.cit.cosina`
+- Artifact ID: `altru`
+- Base Package: `edu.cit.cosina.altru`
 
-### `npm start`
+## Repository Structure
+- `backend/` Spring Boot API
+- `src/` React app source (inside web workspace)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Steps To Run Backend
+1. Open terminal in `backend/`.
+2. Ensure MySQL is running (Workbench can be used for administration).
+3. Configure `backend/src/main/resources/application.properties`:
+	 - `spring.datasource.username`
+	 - `spring.datasource.password`
+	 - `spring.datasource.url` (if needed)
+4. Run:
+	 - `mvn clean spring-boot:run`
+5. Backend starts at `http://localhost:8080`.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Steps To Run Web App
+1. Open terminal in this folder (`web/`).
+2. Install dependencies:
+	 - `npm install`
+3. Start development server:
+	 - `npm start`
+4. Open `http://localhost:3000`.
 
-### `npm test`
+## Steps To Run Mobile App
+1. Open terminal in the mobile app folder (once added).
+2. Install dependencies:
+	 - `npm install`
+3. Start app using project command:
+	 - `npm start` or `npx expo start` (depends on chosen mobile stack)
+4. Point mobile API base URL to backend host/port.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## API Endpoints
+- `POST /api/auth/register`
+	- Body: `{ "name": "...", "email": "...", "password": "..." }`
+	- Response: `{ "token": "..." }`
 
-### `npm run build`
+- `POST /api/auth/login`
+	- Body: `{ "email": "...", "password": "..." }`
+	- Response: `{ "token": "..." }`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `GET /api/user/me` (Protected)
+	- Header: `Authorization: Bearer <token>`
+	- Response: `{ "id": 1, "name": "...", "email": "..." }`
