@@ -5,6 +5,10 @@ import Landing from './pages/landing';
 import Login from './pages/login';
 import Register from './pages/register';
 import Dashboard from './pages/dashboard';
+import Causes from './pages/causes';
+import CauseDetails from './pages/causeDetails';
+import Fundraise from './pages/fundraise';
+import Settings from './pages/settings';
 import './App.css';
 
 function App() {
@@ -20,6 +24,38 @@ function App() {
             element={(
               <PrivateRoute>
                 <Dashboard />
+              </PrivateRoute>
+            )}
+          />
+          <Route
+            path="/causes"
+            element={(
+              <PrivateRoute>
+                <Causes />
+              </PrivateRoute>
+            )}
+          />
+          <Route
+            path="/causes/:id"
+            element={(
+              <PrivateRoute>
+                <CauseDetails />
+              </PrivateRoute>
+            )}
+          />
+          <Route
+            path="/fundraise"
+            element={(
+              <PrivateRoute>
+                <Fundraise />
+              </PrivateRoute>
+            )}
+          />
+          <Route
+            path="/settings"
+            element={(
+              <PrivateRoute>
+                <Settings />
               </PrivateRoute>
             )}
           />
