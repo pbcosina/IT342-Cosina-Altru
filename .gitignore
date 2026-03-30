@@ -1,0 +1,22 @@
+# general
+*.log
+.idea/
+.vscode/
+.env
+
+# web
+web/node_modules/
+web/build/
+web/dist/
+
+# backend
+backend/target/
+
+# android
+*.gradle
+.gradle/
+build/
+
+# os
+.DS_Store
+Thumbs.db
