@@ -1,0 +1,403 @@
+/* ===== Landing Page ===== */
+.landing-page {
+    width: 100%;
+    overflow-x: hidden;
+    background-color: var(--color-bg);
+}
+
+/* ===== Navbar ===== */
+.landing-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: transparent;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.landing-navbar.scrolled {
+    background-color: rgba(155, 171, 184, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-logo {
+    font-family: 'Agbalumo', cursive;
+    font-size: 1.6rem;
+    font-weight: 400;
+    font-style: normal;
+    color: var(--color-text-dark);
+    letter-spacing: -0.5px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.navbar-links a {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-text-dark);
+    transition: width 0.3s ease;
+}
+
+.navbar-links a:hover::after {
+    width: 100%;
+}
+
+.navbar-links a:hover {
+    opacity: 1;
+}
+
+.navbar-auth-btn {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+}
+
+.navbar-auth-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-text-dark);
+    transition: width 0.3s ease;
+}
+
+.navbar-auth-btn:hover {
+    transform: none;
+    opacity: 1;
+}
+
+.navbar-auth-btn:hover::after {
+    width: 100%;
+}
+
+/* ===== Hero Section ===== */
+.hero-section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 650px;
+    padding: 0 2rem;
+    margin-top: -10%;
+}
+
+.hero-title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-bottom: 1.2rem;
+    line-height: 1.13;
+    letter-spacing: -0.8px;
+    animation: heroFadeIn 0.8s ease-out both;
+}
+
+@keyframes heroFadeIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: var(--color-text-dark);
+    opacity: 0.8;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 400;
+    animation: heroFadeIn 0.8s ease-out 0.15s both;
+}
+
+.hero-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    animation: heroFadeIn 0.8s ease-out 0.3s both;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-button), #7a6560);
+    color: var(--color-text-light);
+    padding: 0.9rem 2.4rem;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    box-shadow: 0 6px 20px rgba(150, 126, 118, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #7a6560, #66504a);
+    box-shadow: 0 10px 28px rgba(150, 126, 118, 0.55);
+    transform: translateY(-3px);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--color-text-dark);
+    padding: 0.9rem 2.4rem;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 2px solid var(--color-text-dark);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-text-dark);
+    color: var(--color-text-light);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(44, 44, 44, 0.2);
+}
+
+/* ===== About Section ===== */
+.about-section {
+    position: relative;
+    width: 100%;
+    padding: 4rem 2rem 6rem;
+    background-color: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.about-label {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--color-about-box), #a08888);
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.65rem 2.5rem;
+    border-radius: 50px;
+    margin-bottom: 3rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 14px rgba(160,136,136,0.25);
+}
+
+/* ===== Carousel ===== */
+.carousel-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.carousel-arrow {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #e8e2d8;
+    border: 2px solid #d4cfc8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    color: var(--color-text-dark);
+    font-size: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-arrow:hover {
+    background-color: var(--color-about-box);
+    border-color: var(--color-about-box);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.carousel-arrow:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.carousel-track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    overflow: hidden;
+    padding: 2rem 0;
+    flex: 1;
+}
+
+.carousel-card {
+    background: linear-gradient(145deg, var(--color-blue), #8097a6);
+    border-radius: 24px;
+    padding: 2rem 1.5rem;
+    min-width: 220px;
+    max-width: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0.72;
+    transform: scale(0.9);
+    cursor: default;
+    border: 1.5px solid rgba(255,255,255,0.2);
+}
+
+.carousel-card.active {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow: 0 16px 48px rgba(45,49,66,0.18);
+    border-color: rgba(255,255,255,0.45);
+}
+
+.carousel-card-image {
+    width: 110px;
+    height: 110px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.25);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.carousel-card-image-inner {
+    width: 80px;
+    height: 60px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.45);
+}
+
+.carousel-card-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    line-height: 1.5;
+}
+
+.carousel-card.active .carousel-card-text {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .landing-navbar {
+        padding: 1rem 2rem;
+    }
+
+    .navbar-links {
+        gap: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: 2.4rem;
+    }
+
+    .carousel-track {
+        gap: 1rem;
+    }
+
+    .carousel-card {
+        min-width: 180px;
+        max-width: 200px;
+        padding: 1.5rem 1rem;
+    }
+
+    .carousel-card-image {
+        width: 90px;
+        height: 90px;
+    }
+}
+
+@media (max-width: 640px) {
+    .landing-navbar {
+        padding: 1rem 1.5rem;
+    }
+
+    .navbar-links {
+        gap: 1rem;
+    }
+
+    .navbar-links a,
+    .navbar-auth-btn {
+        font-size: 0.85rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .carousel-card {
+        min-width: 150px;
+        max-width: 170px;
+        padding: 1.2rem 0.8rem;
+    }
+
+    .carousel-card-image {
+        width: 75px;
+        height: 75px;
+    }
+
+    .carousel-card-text {
+        font-size: 0.8rem;
+    }
+}
