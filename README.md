@@ -1,7 +1,11 @@
 # Altru - Full Stack Fundraising Platform
 
 ## Project Description
-Altru is a full-stack fundraising platform with user authentication. This Session 1 scope delivers a Spring Boot REST backend and a ReactJS web frontend with registration, login, protected dashboard access, and logout.
+Altru is a full-stack fundraising platform with JWT authentication, campaign management, and donation tracking.
+The project currently uses a layered backend architecture:
+- Controller -> Service -> Repository
+- DTO-based request/response flow
+- Standardized API envelope for success and error payloads
 
 ## Technologies Used
 - Backend:
@@ -42,18 +46,69 @@ Altru is a full-stack fundraising platform with user authentication. This Sessio
    - `npm start`
 4. Web app runs at `http://localhost:3000`.
 
+## API Response Format
+All endpoints return a consistent envelope:
+- `success`: boolean
+- `message`: string
+- `data`: object | array | null
+- `timestamp`: ISO datetime
+
+Example success payload:
+```json
+{
+  "success": true,
+  "message": "Campaigns fetched",
+  "data": [],
+  "timestamp": "2026-04-01T00:00:00"
+}
+```
+
+Example error payload:
+```json
+{
+  "success": false,
+  "message": "Invalid email or password",
+  "data": null,
+  "timestamp": "2026-04-01T00:00:00"
+}
+```
+
 ## API Endpoints
+
+### Auth
 - `POST /api/auth/register`
-  - Registers a new user
-  - Request body: `{ "name": "...", "email": "...", "password": "..." }`
-  - Response body: `{ "token": "..." }`
-
 - `POST /api/auth/login`
-  - Authenticates existing user
-  - Request body: `{ "email": "...", "password": "..." }`
-  - Response body: `{ "token": "..." }`
 
-- `GET /api/user/me` (Protected)
-  - Returns the authenticated user profile
-  - Header: `Authorization: Bearer <token>`
-  - Response body: `{ "id": 1, "name": "...", "email": "..." }`
+### Users
+- `GET /api/users/me` (Protected)
+- `GET /api/user/me` (Protected, backward-compatible alias)
+
+### Campaigns
+- `GET /api/campaigns` (Protected)
+- `GET /api/campaigns/my` (Protected)
+- `GET /api/campaigns/{id}` (Protected)
+- `POST /api/campaigns` (Protected)
+- `PUT /api/campaigns/{id}` (Protected)
+- `DELETE /api/campaigns/{id}` (Protected)
+
+Compatibility routes still supported during migration:
+- `/api/causes`
+- `/api/causes/{id}`
+
+### Donations
+- `POST /api/donations/campaigns/{campaignId}` (Protected)
+- `GET /api/donations/me` (Protected)
+
+Legacy compatibility route:
+- `POST /api/campaigns/{id}/donate?amount={value}` (Protected)
+
+## Security and Error Handling
+- JWT-based stateless authentication
+- Role-based authorization (`USER`, `ADMIN`)
+- Centralized exception handling through global handler with standard HTTP status mapping:
+  - 400 Bad Request
+  - 401 Unauthorized
+  - 403 Forbidden
+  - 404 Not Found
+  - 409 Conflict
+  - 500 Internal Server Error
