@@ -5,13 +5,17 @@ import edu.cit.cosina.altru.campaign.dto.CampaignUpsertRequest;
 import edu.cit.cosina.altru.campaign.Campaign;
 import edu.cit.cosina.altru.campaign.CampaignRepository;
 import edu.cit.cosina.altru.campaign.CampaignStatus;
+import edu.cit.cosina.altru.common.api.PagedResponse;
 import edu.cit.cosina.altru.common.exception.ForbiddenOperationException;
 import edu.cit.cosina.altru.common.exception.ResourceNotFoundException;
 import edu.cit.cosina.altru.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -25,36 +29,57 @@ public class CampaignService {
         this.campaignRepository = campaignRepository;
     }
 
-    public List<CampaignResponse> getPublishedCampaigns(String search, String category) {
+    public PagedResponse<CampaignResponse> getPublishedCampaigns(
+        String search,
+        String category,
+        int page,
+        int size,
+        String sortBy,
+        String sortDirection
+    ) {
         String normalizedSearch = search == null ? "" : search.trim();
         String normalizedCategory = category == null ? "" : category.trim();
+        Sort sort = buildSort(sortBy, sortDirection);
+        Pageable pageable = PageRequest.of(page, size, Objects.requireNonNull(sort));
 
-        List<Campaign> campaigns;
+        Page<Campaign> campaigns;
         if (!normalizedSearch.isEmpty() && !normalizedCategory.isEmpty()) {
-            campaigns = campaignRepository.findByStatusAndTitleContainingIgnoreCaseAndCategoryIgnoreCaseOrderByCreatedAtDesc(
+            campaigns = campaignRepository.findByStatusAndTitleContainingIgnoreCaseAndCategoryIgnoreCase(
                 CampaignStatus.PUBLISHED,
                 normalizedSearch,
-                normalizedCategory
+                normalizedCategory,
+                pageable
             );
         } else if (!normalizedSearch.isEmpty()) {
-            campaigns = campaignRepository.findByStatusAndTitleContainingIgnoreCaseOrderByCreatedAtDesc(
+            campaigns = campaignRepository.findByStatusAndTitleContainingIgnoreCase(
                 CampaignStatus.PUBLISHED,
-                normalizedSearch
+                normalizedSearch,
+                pageable
             );
         } else if (!normalizedCategory.isEmpty()) {
-            campaigns = campaignRepository.findByStatusAndCategoryIgnoreCaseOrderByCreatedAtDesc(
+            campaigns = campaignRepository.findByStatusAndCategoryIgnoreCase(
                 CampaignStatus.PUBLISHED,
-                normalizedCategory
+                normalizedCategory,
+                pageable
             );
         } else {
-            campaigns = campaignRepository.findByStatusOrderByCreatedAtDesc(CampaignStatus.PUBLISHED);
+            campaigns = campaignRepository.findByStatus(CampaignStatus.PUBLISHED, pageable);
         }
 
-        return campaigns.stream().map(this::toResponse).toList();
+        return PagedResponse.from(campaigns.map(this::toResponse), sort);
     }
 
-    public List<CampaignResponse> getMyCampaigns(User user) {
-        return campaignRepository.findByAuthorOrderByCreatedAtDesc(user).stream().map(this::toResponse).toList();
+    public PagedResponse<CampaignResponse> getMyCampaigns(
+        User user,
+        int page,
+        int size,
+        String sortBy,
+        String sortDirection
+    ) {
+        Sort sort = buildSort(sortBy, sortDirection);
+        Pageable pageable = PageRequest.of(page, size, Objects.requireNonNull(sort));
+        Page<CampaignResponse> responsePage = campaignRepository.findByAuthor(user, pageable).map(this::toResponse);
+        return PagedResponse.from(responsePage, sort);
     }
 
     public CampaignResponse getCampaignById(Long id, User user) {
@@ -145,5 +170,12 @@ public class CampaignService {
             status = CampaignStatus.valueOf(request.getStatus().trim().toUpperCase());
         }
         campaign.setStatus(status);
+    }
+
+    private Sort buildSort(String sortBy, String sortDirection) {
+        String normalizedSortBy = (sortBy == null || sortBy.isBlank()) ? "createdAt" : sortBy.trim();
+        String normalizedDirection = (sortDirection == null || sortDirection.isBlank()) ? "DESC" : sortDirection.trim();
+        Sort.Direction direction = "ASC".equalsIgnoreCase(normalizedDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        return Sort.by(direction, normalizedSortBy);
     }
 }

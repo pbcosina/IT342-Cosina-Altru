@@ -96,6 +96,31 @@ Example error payload:
 - `PUT /api/campaigns/{id}` (Protected)
 - `DELETE /api/campaigns/{id}` (Protected)
 
+Pagination and sorting for list endpoints:
+- Supported query params on `GET /api/campaigns` and `GET /api/campaigns/my`:
+  - `page` (default: `0`)
+  - `size` (default: `12`)
+  - `sortBy` (default: `createdAt`)
+  - `sortDirection` (`ASC` or `DESC`, default: `DESC`)
+- `GET /api/campaigns` additionally supports filters:
+  - `search`
+  - `category`
+
+Paged data payload shape for campaign lists:
+```json
+{
+  "items": [],
+  "page": 0,
+  "size": 12,
+  "totalElements": 0,
+  "totalPages": 0,
+  "hasNext": false,
+  "hasPrevious": false,
+  "sortBy": "createdAt",
+  "sortDirection": "DESC"
+}
+```
+
 Compatibility routes still supported during migration:
 - `/api/causes`
 - `/api/causes/{id}`

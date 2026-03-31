@@ -4,6 +4,7 @@ import edu.cit.cosina.altru.campaign.dto.CampaignResponse;
 import edu.cit.cosina.altru.campaign.dto.CampaignUpsertRequest;
 import edu.cit.cosina.altru.campaign.service.CampaignService;
 import edu.cit.cosina.altru.common.api.ApiResponse;
+import edu.cit.cosina.altru.common.api.PagedResponse;
 import edu.cit.cosina.altru.donation.dto.DonationCreateRequest;
 import edu.cit.cosina.altru.donation.dto.DonationResponse;
 import edu.cit.cosina.altru.donation.service.DonationService;
@@ -16,8 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
-
 @RestController
 @RequestMapping({"/api/campaigns", "/api/causes"})
 public class CampaignController {
@@ -31,17 +30,40 @@ public class CampaignController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CampaignResponse>>> getPublishedCampaigns(
+    public ResponseEntity<ApiResponse<PagedResponse<CampaignResponse>>> getPublishedCampaigns(
         @RequestParam(required = false) String search,
-        @RequestParam(required = false) String category
+        @RequestParam(required = false) String category,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "12") int size,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @RequestParam(defaultValue = "DESC") String sortDirection
     ) {
-        List<CampaignResponse> campaigns = campaignService.getPublishedCampaigns(search, category);
+        PagedResponse<CampaignResponse> campaigns = campaignService.getPublishedCampaigns(
+            search,
+            category,
+            page,
+            size,
+            sortBy,
+            sortDirection
+        );
         return ResponseEntity.ok(ApiResponse.success("Campaigns fetched", campaigns));
     }
 
     @GetMapping("/my")
-    public ResponseEntity<ApiResponse<List<CampaignResponse>>> getMyCampaigns(@AuthenticationPrincipal User user) {
-        List<CampaignResponse> campaigns = campaignService.getMyCampaigns(user);
+    public ResponseEntity<ApiResponse<PagedResponse<CampaignResponse>>> getMyCampaigns(
+        @AuthenticationPrincipal User user,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "12") int size,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @RequestParam(defaultValue = "DESC") String sortDirection
+    ) {
+        PagedResponse<CampaignResponse> campaigns = campaignService.getMyCampaigns(
+            user,
+            page,
+            size,
+            sortBy,
+            sortDirection
+        );
         return ResponseEntity.ok(ApiResponse.success("My campaigns fetched", campaigns));
     }
 
