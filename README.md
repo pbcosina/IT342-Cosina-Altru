@@ -129,6 +129,17 @@ Compatibility routes still supported during migration:
 - `POST /api/donations/campaigns/{campaignId}` (Protected)
 - `GET /api/donations/me` (Protected)
 
+Donation idempotency and status lifecycle:
+- You can send `X-Idempotency-Key` header for safe retries.
+- You can also send `idempotencyKey` in request body for clients that cannot set headers.
+- If the same authenticated user sends the same idempotency key again, the API returns the existing donation record instead of creating a duplicate.
+- Donation status lifecycle now supports: `PENDING`, `COMPLETED`, `FAILED`, `REFUNDED`.
+- Donation response now includes:
+  - `idempotencyKey`
+  - `paymentReference`
+  - `failureReason`
+  - `processedAt`
+
 Legacy compatibility route:
 - `POST /api/campaigns/{id}/donate?amount={value}` (Protected)
 

@@ -106,11 +106,12 @@ public class CampaignController {
     public ResponseEntity<ApiResponse<DonationResponse>> legacyDonate(
         @PathVariable @NonNull Long id,
         @RequestParam BigDecimal amount,
+        @RequestHeader(value = "X-Idempotency-Key", required = false) String idempotencyKey,
         @AuthenticationPrincipal User user
     ) {
         DonationCreateRequest request = new DonationCreateRequest();
         request.setAmount(amount);
-        DonationResponse donation = donationService.createDonation(id, request, user);
+        DonationResponse donation = donationService.createDonation(id, request, idempotencyKey, user);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success("Donation processed", donation));
     }

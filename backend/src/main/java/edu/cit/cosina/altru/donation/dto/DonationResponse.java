@@ -10,6 +10,10 @@ public class DonationResponse {
     private Long campaignId;
     private BigDecimal amount;
     private String status;
+    private String idempotencyKey;
+    private String paymentReference;
+    private String failureReason;
+    private LocalDateTime processedAt;
     private LocalDateTime createdAt;
 
     public Long getId() {
@@ -50,6 +54,38 @@ public class DonationResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+
+    public void setPaymentReference(String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
+    public LocalDateTime getProcessedAt() {
+        return processedAt;
+    }
+
+    public void setProcessedAt(LocalDateTime processedAt) {
+        this.processedAt = processedAt;
     }
 
     public LocalDateTime getCreatedAt() {

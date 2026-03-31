@@ -13,7 +13,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DonationService {
@@ -27,10 +29,18 @@ public class DonationService {
     }
 
     @Transactional
-    public DonationResponse createDonation(Long campaignId, DonationCreateRequest request, User user) {
+    public DonationResponse createDonation(Long campaignId, DonationCreateRequest request, String idempotencyHeader, User user) {
         BigDecimal amount = request.getAmount();
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new BadRequestException("Amount must be greater than 0");
+        }
+
+        String idempotencyKey = normalizeIdempotencyKey(request.getIdempotencyKey(), idempotencyHeader);
+        if (idempotencyKey != null) {
+            Donation existing = donationRepository.findByUserAndIdempotencyKey(user, idempotencyKey).orElse(null);
+            if (existing != null) {
+                return toResponse(existing);
+            }
         }
 
         Campaign campaign = campaignService.getPublishedCampaignForDonation(campaignId);
@@ -40,10 +50,14 @@ public class DonationService {
         donation.setCampaign(campaign);
         donation.setAmount(amount);
         donation.setStatus(DonationStatus.PENDING);
+        donation.setIdempotencyKey(idempotencyKey);
         Donation savedDonation = donationRepository.save(donation);
 
         campaign.setCurrentDonation(campaign.getCurrentDonation().add(amount));
         savedDonation.setStatus(DonationStatus.COMPLETED);
+        savedDonation.setPaymentReference("INT-" + savedDonation.getId());
+        savedDonation.setProcessedAt(LocalDateTime.now());
+        savedDonation.setFailureReason(null);
 
         return toResponse(donationRepository.save(savedDonation));
     }
@@ -59,7 +73,19 @@ public class DonationService {
         response.setCampaignId(donation.getCampaign().getId());
         response.setAmount(donation.getAmount());
         response.setStatus(donation.getStatus().name());
+        response.setIdempotencyKey(donation.getIdempotencyKey());
+        response.setPaymentReference(donation.getPaymentReference());
+        response.setFailureReason(donation.getFailureReason());
+        response.setProcessedAt(donation.getProcessedAt());
         response.setCreatedAt(donation.getCreatedAt());
         return response;
+    }
+
+    private String normalizeIdempotencyKey(String requestKey, String headerKey) {
+        String raw = requestKey != null && !requestKey.isBlank() ? requestKey : headerKey;
+        if (raw == null || raw.isBlank()) {
+            return "GEN-" + UUID.randomUUID();
+        }
+        return raw.trim();
     }
 }

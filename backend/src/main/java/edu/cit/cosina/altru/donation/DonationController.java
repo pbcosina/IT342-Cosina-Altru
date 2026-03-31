@@ -27,9 +27,10 @@ public class DonationController {
     public ResponseEntity<ApiResponse<DonationResponse>> createDonation(
         @PathVariable Long campaignId,
         @Valid @RequestBody DonationCreateRequest request,
+        @RequestHeader(value = "X-Idempotency-Key", required = false) String idempotencyKey,
         @AuthenticationPrincipal User user
     ) {
-        DonationResponse donation = donationService.createDonation(campaignId, request, user);
+        DonationResponse donation = donationService.createDonation(campaignId, request, idempotencyKey, user);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success("Donation processed", donation));
     }

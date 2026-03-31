@@ -34,6 +34,16 @@ export const campaignsApi = {
 };
 
 export const donationsApi = {
-  create: (campaignId, amount) => apiClient.post(`/donations/campaigns/${campaignId}`, { amount }),
+  create: (campaignId, amount, idempotencyKey) => apiClient.post(
+    `/donations/campaigns/${campaignId}`,
+    { amount, idempotencyKey },
+    idempotencyKey
+      ? {
+          headers: {
+            'X-Idempotency-Key': idempotencyKey,
+          },
+        }
+      : undefined
+  ),
   my: () => apiClient.get('/donations/me'),
 };
