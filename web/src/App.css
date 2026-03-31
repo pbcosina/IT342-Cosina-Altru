@@ -1,0 +1,8 @@
+:root {
+  --color-text-dark: #2d3142;
+  --color-blue: #9ba9b8;
+}
+
+#root {
+  min-height: 100vh;
+}
