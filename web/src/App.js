@@ -28,13 +28,22 @@ function App() {
             )}
           />
           <Route
-            path="/causes"
+            path="/campaigns"
             element={(
               <PrivateRoute>
                 <Causes />
               </PrivateRoute>
             )}
           />
+          <Route
+            path="/campaigns/:id"
+            element={(
+              <PrivateRoute>
+                <CauseDetails />
+              </PrivateRoute>
+            )}
+          />
+          <Route path="/causes" element={<Navigate to="/campaigns" replace />} />
           <Route
             path="/causes/:id"
             element={(

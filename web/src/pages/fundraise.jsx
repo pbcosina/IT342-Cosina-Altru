@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import { campaignsApi } from '../services/apiService';
 import Sidebar from '../components/sidebar';
 import './fundraise.css';
 
@@ -81,26 +81,20 @@ const Fundraise = () => {
     const { user } = useAuth();
     const [view, setView] = useState('list');       // 'list' | 'steps' | 'preview'
     const [formStep, setFormStep] = useState(1);    // 1–5
-    const [myCauses, setMyCauses] = useState([]);
+    const [myCampaigns, setMyCampaigns] = useState([]);
     const [formData, setFormData] = useState(initialForm);
     const [currentId, setCurrentId] = useState(null);
     const [message, setMessage] = useState('');
     const [stepError, setStepError] = useState('');
 
-    const token = localStorage.getItem('token');
-    const api = axios.create({
-        baseURL: 'http://localhost:8080/api',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-
     const fetchMyCauses = useCallback(async () => {
         try {
-            const res = await api.get('/causes/my');
-            setMyCauses(res.data);
+            const data = await campaignsApi.my();
+            setMyCampaigns(data);
         } catch (error) {
-            console.error('Failed to fetch my causes', error);
+            console.error('Failed to fetch my campaigns', error);
         }
-    }, [api]);
+    }, []);
 
     useEffect(() => {
         if (view === 'list') fetchMyCauses();
@@ -133,7 +127,7 @@ const Fundraise = () => {
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this campaign?')) return;
         try {
-            await api.delete(`/causes/${id}`);
+            await campaignsApi.remove(id);
             fetchMyCauses();
         } catch (error) {
             console.error('Delete failed', error);
@@ -207,9 +201,9 @@ const Fundraise = () => {
         try {
             const payload = { ...formData, status };
             if (currentId) {
-                await api.put(`/causes/${currentId}`, payload);
+                await campaignsApi.update(currentId, payload);
             } else {
-                await api.post('/causes', payload);
+                await campaignsApi.create(payload);
             }
             setMessage(`Campaign ${status === 'PUBLISHED' ? 'published' : 'saved as draft'} successfully!`);
             setTimeout(() => {
@@ -252,13 +246,13 @@ const Fundraise = () => {
                                 </button>
                             </div>
 
-                            {myCauses.length === 0 ? (
+                            {myCampaigns.length === 0 ? (
                                 <div className="empty-state">
                                     <p>You haven't started any campaigns yet.<br />Hit <strong>New Campaign</strong> to get started.</p>
                                 </div>
                             ) : (
                                 <div className="causes-grid">
-                                    {myCauses.map(cause => (
+                                    {myCampaigns.map(cause => (
                                         <div className="cause-card" key={cause.id}>
                                             <div
                                                 className="cause-image"

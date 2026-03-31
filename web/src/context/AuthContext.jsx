@@ -1,11 +1,8 @@
 import { createContext, useState, useContext, useEffect, useMemo } from 'react';
-import axios from 'axios';
 import PropTypes from 'prop-types';
+import { authApi, usersApi } from '../services/apiService';
 
 const AuthContext = createContext(null);
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api',
-});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -14,21 +11,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
-    } else {
-      delete api.defaults.headers.common.Authorization;
-    }
-
-    if (token) {
-      api.get('/user/me')
+      usersApi.me()
         .then(response => {
-          setUser(response.data);
+          setUser(response);
         })
         .catch(() => {
           setUser(null);
           setToken(null);
           localStorage.removeItem('token');
-          delete api.defaults.headers.common.Authorization;
         })
         .finally(() => {
           setLoading(false);
@@ -40,33 +30,31 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const newToken = response.data.token;
+      const response = await authApi.login(email, password);
+      const newToken = response.token;
       setToken(newToken);
       localStorage.setItem('token', newToken);
-      api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-      // Fetch user data
-      const userResponse = await api.get('/user/me');
-      setUser(userResponse.data);
+
+      const userResponse = await usersApi.me();
+      setUser(userResponse);
       return { success: true };
     } catch (error) {
       console.error("Login failed", error);
-      return { success: false, error: error.response?.data?.message || 'Login failed' };
+      return { success: false, error: error.message || 'Login failed' };
     }
   };
 
   const register = async (name, email, password) => {
     try {
-      const response = await api.post('/auth/register', { name, email, password });
-      const newToken = response.data.token;
+      const response = await authApi.register(name, email, password);
+      const newToken = response.token;
       setToken(newToken);
       localStorage.setItem('token', newToken);
-      api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-      const userResponse = await api.get('/user/me');
-      setUser(userResponse.data);
+      const userResponse = await usersApi.me();
+      setUser(userResponse);
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.response?.data?.message || 'Registration failed' };
+      return { success: false, error: error.message || 'Registration failed' };
     }
   };
 
@@ -74,12 +62,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
-    delete api.defaults.headers.common.Authorization;
   };
 
   const contextValue = useMemo(
-    () => ({ user, login, register, logout, loading }),
-    [user, loading]
+    () => ({ user, token, login, register, logout, loading }),
+    [user, token, loading]
   );
 
   return (

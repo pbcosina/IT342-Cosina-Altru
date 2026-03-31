@@ -28,9 +28,9 @@ const Sidebar = () => {
 
                 <div className="nav-section">
                     <span className="nav-section-title">Features</span>
-                    <Link to="/causes" className={`nav-item ${isActive('/causes') || location.pathname.startsWith('/causes/') ? 'active' : ''}`}>
+                    <Link to="/campaigns" className={`nav-item ${isActive('/campaigns') || location.pathname.startsWith('/campaigns/') ? 'active' : ''}`}>
                         <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.35-9.33-8.28C1.2 9.62 2.52 6 5.7 5c1.85 0 3.18 1.04 4.3 2.38C11.12 6.04 12.45 5 14.3 5c3.18 0 4.5 3.62 3.03 7.72C19 16.65 12 21 12 21z" /></svg>
-                        <span>Causes</span>
+                        <span>Campaigns</span>
                     </Link>
                     <Link to="/fundraise" className={`nav-item ${isActive('/fundraise')}`}>
                         <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h6v10H4a1 1 0 0 1-1-1v-9zm8-6h8a2 2 0 0 1 2 2v4h-6a3 3 0 0 0-3 3v7h-1a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 9h6l-2.2 7.3a1 1 0 0 1-1 .7H15a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z" /></svg>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { campaignsApi, donationsApi } from '../services/apiService';
 import Sidebar from '../components/sidebar';
 import { useAuth } from '../context/AuthContext';
 import './causeDetails.css';
@@ -9,24 +9,18 @@ const CauseDetails = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [cause, setCause] = useState(null);
+    const [campaign, setCampaign] = useState(null);
     const [donationAmount, setDonationAmount] = useState('');
     const [message, setMessage] = useState('');
 
-    const token = localStorage.getItem('token');
-    const api = axios.create({
-        baseURL: 'http://localhost:8080/api',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-
     const fetchCauseDetails = useCallback(async () => {
         try {
-            const res = await api.get(`/causes/${id}`);
-            setCause(res.data);
+            const data = await campaignsApi.getById(id);
+            setCampaign(data);
         } catch (error) {
-            console.error('Failed to fetch cause details', error);
+            console.error('Failed to fetch campaign details', error);
         }
-    }, [api, id]);
+    }, [id]);
 
     useEffect(() => {
         fetchCauseDetails();
@@ -39,24 +33,24 @@ const CauseDetails = () => {
             return;
         }
         try {
-            await api.post(`/causes/${id}/donate?amount=${amount}`);
+            await donationsApi.create(id, amount);
             setMessage('Donation successful! Thank you.');
             setDonationAmount('');
-            fetchCauseDetails(); // Refresh donations
+            fetchCauseDetails();
         } catch (error) {
             console.error('Donation failed', error);
-            setMessage('Donation failed.');
+            setMessage(error.message || 'Donation failed.');
         }
     };
 
-    if (!cause) return <div className="causes-layout"><Sidebar /><main className="main-content">Loading...</main></div>;
+    if (!campaign) return <div className="causes-layout"><Sidebar /><main className="main-content">Loading...</main></div>;
 
     return (
         <div className="causes-layout">
             <Sidebar />
             <main className="main-content">
                 <header className="top-header" style={{ justifyContent: 'space-between' }}>
-                    <button className="back-btn" onClick={() => navigate('/causes')}>&larr; Back to Causes</button>
+                    <button className="back-btn" onClick={() => navigate('/campaigns')}>&larr; Back to Campaigns</button>
                     <div className="user-profile">
                         <span>{user?.name || 'User'}</span>
                         <div className="user-avatar-placeholder" />
@@ -65,17 +59,17 @@ const CauseDetails = () => {
                 <div className="content-body cause-details-body">
                     <div className="cause-main-section">
                         <div className="cause-details-container">
-                            <div className="cause-details-image" style={{ backgroundImage: `url(${cause.imageUrl || 'https://via.placeholder.com/800'})` }}></div>
-                            <h1 className="cause-details-title">{cause.title}</h1>
+                            <div className="cause-details-image" style={{ backgroundImage: `url(${campaign.imageUrl || 'https://via.placeholder.com/800'})` }}></div>
+                            <h1 className="cause-details-title">{campaign.title}</h1>
                             <div className="cause-meta">
-                                <span className="cause-category">{cause.category || 'General'}</span>
-                                <span className="cause-author-meta">by {cause.authorName}</span>
-                                {cause.whoFor && <span className="cause-whofor">For: {cause.whoFor}</span>}
+                                <span className="cause-category">{campaign.category || 'General'}</span>
+                                <span className="cause-author-meta">by {campaign.authorName}</span>
+                                {campaign.whoFor && <span className="cause-whofor">For: {campaign.whoFor}</span>}
                             </div>
 
                             <div className="cause-story">
-                                <h2>About this cause</h2>
-                                <p>{cause.story}</p>
+                                <h2>About this campaign</h2>
+                                <p>{campaign.story}</p>
                             </div>
                         </div>
                     </div>
@@ -85,21 +79,21 @@ const CauseDetails = () => {
                             <div className="cause-stats">
                                 <div className="stat-box">
                                     <span className="stat-label">Raised</span>
-                                    <span className="stat-value">₱{cause.currentDonation}</span>
+                                    <span className="stat-value">₱{campaign.currentDonation}</span>
                                 </div>
                                 <div className="stat-box">
                                     <span className="stat-label">Goal</span>
-                                    <span className="stat-value goal">₱{cause.donationGoal}</span>
+                                    <span className="stat-value goal">₱{campaign.donationGoal}</span>
                                 </div>
                             </div>
                             <div className="progress-bar-container">
                                 <div
                                     className="progress-bar-fill"
-                                    style={{ width: `${Math.min(100, (cause.currentDonation / cause.donationGoal) * 100)}%` }}
+                                    style={{ width: `${Math.min(100, (campaign.currentDonation / campaign.donationGoal) * 100)}%` }}
                                 ></div>
                             </div>
 
-                            <h3 className="support-title">Support this cause</h3>
+                            <h3 className="support-title">Support this campaign</h3>
                             <p className="support-sub">Your contribution makes a huge difference.</p>
 
                             <input

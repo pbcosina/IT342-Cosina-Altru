@@ -1,76 +1,30 @@
-package edu.cit.cosina.altru.cause;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.cit.cosina.altru.donation.Donation;
-import edu.cit.cosina.altru.user.User;
-import jakarta.persistence.*;
+package edu.cit.cosina.altru.campaign.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
-@Entity
-@Table(name = "causes")
-public class Cause {
+public class CampaignResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String title;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String story;
-
-    @Column(nullable = false)
     private String category;
-
-    @Column(nullable = false)
-    private BigDecimal donationGoal = BigDecimal.ZERO;
-
-    @Column(nullable = false)
-    private BigDecimal currentDonation = BigDecimal.ZERO;
-
-    @Column(length = 1024)
+    private BigDecimal donationGoal;
+    private BigDecimal currentDonation;
     private String imageUrl;
-
-    @Column(nullable = false)
     private String whoFor;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private CauseStatus status = CauseStatus.DRAFT;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    @JsonIgnore
-    private User author;
-
-    @OneToMany(mappedBy = "campaign")
-    @JsonIgnore
-    private Set<Donation> donations;
-
-    @Column(nullable = false)
+    private String status;
+    private Long authorId;
+    private String authorName;
     private LocalDateTime createdAt;
-
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -129,32 +83,43 @@ public class Cause {
         this.whoFor = whoFor;
     }
 
-    public CauseStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(CauseStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public User getAuthor() {
-        return author;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 
-    @JsonProperty("authorName")
     public String getAuthorName() {
-        return author == null ? null : author.getName();
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

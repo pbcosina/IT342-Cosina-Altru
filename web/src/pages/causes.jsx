@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { campaignsApi } from '../services/apiService';
 import Sidebar from '../components/sidebar';
 import './causes.css';
 
@@ -21,27 +21,21 @@ const CATEGORIES = [
 const Causes = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [causes, setCauses] = useState([]);
+    const [campaigns, setCampaigns] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
 
-    const token = localStorage.getItem('token');
-    const api = axios.create({
-        baseURL: 'http://localhost:8080/api',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-
     const fetchCauses = useCallback(async () => {
         try {
-            let url = '/causes?';
-            if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}&`;
-            if (selectedCategory) url += `category=${encodeURIComponent(selectedCategory)}`;
-            const res = await api.get(url);
-            setCauses(res.data);
+            const data = await campaignsApi.list({
+                search: searchQuery || undefined,
+                category: selectedCategory || undefined,
+            });
+            setCampaigns(data);
         } catch (error) {
-            console.error('Failed to fetch causes', error);
+            console.error('Failed to fetch campaigns', error);
         }
-    }, [api, searchQuery, selectedCategory]);
+    }, [searchQuery, selectedCategory]);
 
     useEffect(() => {
         fetchCauses();
@@ -61,7 +55,7 @@ const Causes = () => {
                 <div className="content-body">
                     {/* Hero */}
                     <div className="causes-page-hero">
-                        <h1>Browse Causes</h1>
+                        <h1>Browse Campaigns</h1>
                         <p>Find something worth supporting — every peso counts.</p>
                     </div>
 
@@ -94,43 +88,43 @@ const Causes = () => {
 
                     {/* Result summary */}
                     <p className="results-count">
-                        {causes.length} {causes.length === 1 ? 'cause' : 'causes'} found
+                        {campaigns.length} {campaigns.length === 1 ? 'campaign' : 'campaigns'} found
                         {selectedCategory && <> in <em>{selectedCategory}</em></>}
                     </p>
 
                     {/* Grid */}
                     <div className="causes-grid">
-                        {causes.length === 0 ? (
+                        {campaigns.length === 0 ? (
                             <p className="no-causes-msg">
                                 <strong>Nothing here yet.</strong>{' '}
                                 Try adjusting your search or filter.
                             </p>
                         ) : (
-                            causes.map(cause => (
+                            campaigns.map(campaign => (
                                 <button
                                     className="cause-card"
-                                    key={cause.id}
-                                    onClick={() => navigate(`/causes/${cause.id}`)}
+                                    key={campaign.id}
+                                    onClick={() => navigate(`/campaigns/${campaign.id}`)}
                                     type="button"
                                 >
                                     <div className="cause-image-wrapper">
                                         <div
                                             className="cause-image"
-                                            style={{ backgroundImage: `url(${cause.imageUrl || 'https://images.unsplash.com/photo-1594750018092-36b0e3dd95de?w=600&auto=format&fit=crop'})` }}
+                                            style={{ backgroundImage: `url(${campaign.imageUrl || 'https://images.unsplash.com/photo-1594750018092-36b0e3dd95de?w=600&auto=format&fit=crop'})` }}
                                         />
-                                        {cause.category && (
+                                        {campaign.category && (
                                             <span className="cause-category-pill">
-                                                {cause.category}
+                                                {campaign.category}
                                             </span>
                                         )}
                                     </div>
                                     <div className="cause-info">
-                                        <h3 className="cause-title">{cause.title}</h3>
+                                        <h3 className="cause-title">{campaign.title}</h3>
                                         <p className="cause-snippet">
-                                            {cause.story ? cause.story.substring(0, 90) + '…' : 'No description provided.'}
+                                            {campaign.story ? campaign.story.substring(0, 90) + '…' : 'No description provided.'}
                                         </p>
                                         <div className="cause-card-footer">
-                                            <p className="cause-author">{cause.authorName || 'Anonymous'}</p>
+                                            <p className="cause-author">{campaign.authorName || 'Anonymous'}</p>
                                             <span className="cause-read-more">View →</span>
                                         </div>
                                     </div>

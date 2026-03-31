@@ -32,11 +32,11 @@ const Dashboard = () => {
 
                     <div className="nav-section">
                         <span className="nav-section-title">Features</span>
-                        <Link to="/causes" className="nav-item">
+                        <Link to="/campaigns" className="nav-item">
                             <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M12 21s-7-4.35-9.33-8.28C1.2 9.62 2.52 6 5.7 5c1.85 0 3.18 1.04 4.3 2.38C11.12 6.04 12.45 5 14.3 5c3.18 0 4.5 3.62 3.03 7.72C19 16.65 12 21 12 21z" />
                             </svg>
-                            <span>Causes</span>
+                            <span>Campaigns</span>
                         </Link>
                         <Link to="/fundraise" className="nav-item">
                             <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
