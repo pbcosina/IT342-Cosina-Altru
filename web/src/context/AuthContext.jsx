@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
           setToken(null);
           localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
         })
         .finally(() => {
           setLoading(false);
@@ -32,8 +33,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authApi.login(email, password);
       const newToken = response.token;
+      const newRefreshToken = response.refreshToken;
       setToken(newToken);
       localStorage.setItem('token', newToken);
+      if (newRefreshToken) {
+        localStorage.setItem('refreshToken', newRefreshToken);
+      }
 
       const userResponse = await usersApi.me();
       setUser(userResponse);
@@ -48,8 +53,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authApi.register(name, email, password);
       const newToken = response.token;
+      const newRefreshToken = response.refreshToken;
       setToken(newToken);
       localStorage.setItem('token', newToken);
+      if (newRefreshToken) {
+        localStorage.setItem('refreshToken', newRefreshToken);
+      }
       const userResponse = await usersApi.me();
       setUser(userResponse);
       return { success: true };
@@ -62,6 +71,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
   };
 
   const contextValue = useMemo(

@@ -2,6 +2,7 @@ package edu.cit.cosina.altru.auth;
 
 import edu.cit.cosina.altru.auth.dto.AuthResponse;
 import edu.cit.cosina.altru.auth.dto.LoginRequest;
+import edu.cit.cosina.altru.auth.dto.RefreshTokenRequest;
 import edu.cit.cosina.altru.auth.dto.RegisterRequest;
 import edu.cit.cosina.altru.auth.service.AuthService;
 import edu.cit.cosina.altru.common.api.ApiResponse;
@@ -32,5 +33,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse response = authService.refresh(request);
+        return ResponseEntity.ok(ApiResponse.success("Token refreshed", response));
     }
 }

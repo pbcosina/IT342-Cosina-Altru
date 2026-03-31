@@ -2,8 +2,10 @@ package edu.cit.cosina.altru.auth.service;
 
 import edu.cit.cosina.altru.auth.dto.AuthResponse;
 import edu.cit.cosina.altru.auth.dto.LoginRequest;
+import edu.cit.cosina.altru.auth.dto.RefreshTokenRequest;
 import edu.cit.cosina.altru.auth.dto.RegisterRequest;
 import edu.cit.cosina.altru.common.exception.ConflictException;
+import edu.cit.cosina.altru.common.exception.ForbiddenOperationException;
 import edu.cit.cosina.altru.security.JwtService;
 import edu.cit.cosina.altru.user.Role;
 import edu.cit.cosina.altru.user.User;
@@ -45,19 +47,38 @@ public class AuthService {
         user.setRole(Role.USER);
 
         User savedUser = userRepository.save(user);
-        String token = jwtService.generateToken(savedUser);
-        return new AuthResponse(token);
+        String token = jwtService.generateAccessToken(savedUser);
+        String refreshToken = jwtService.generateRefreshToken(savedUser);
+        return new AuthResponse(token, refreshToken);
     }
 
     public AuthResponse login(LoginRequest request) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            new UsernamePasswordAuthenticationToken(normalizedEmail, request.getPassword())
         );
 
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(normalizedEmail)
             .orElseThrow(() -> new IllegalStateException("User not found"));
 
-        String token = jwtService.generateToken(user);
-        return new AuthResponse(token);
+        String token = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+        return new AuthResponse(token, refreshToken);
+    }
+
+    public AuthResponse refresh(RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken().trim();
+        String email = jwtService.extractUsername(refreshToken);
+
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ForbiddenOperationException("Invalid refresh token"));
+
+        if (!jwtService.isRefreshTokenValid(refreshToken, user)) {
+            throw new ForbiddenOperationException("Invalid refresh token");
+        }
+
+        String newAccessToken = jwtService.generateAccessToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+        return new AuthResponse(newAccessToken, newRefreshToken);
     }
 }
