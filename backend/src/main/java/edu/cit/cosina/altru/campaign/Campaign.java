@@ -1,4 +1,4 @@
-package edu.cit.cosina.altru.cause;
+package edu.cit.cosina.altru.campaign;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "causes")
-public class Cause {
+public class Campaign {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +41,7 @@ public class Cause {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CauseStatus status = CauseStatus.DRAFT;
+    private CampaignStatus status = CampaignStatus.DRAFT;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
@@ -129,11 +129,11 @@ public class Cause {
         this.whoFor = whoFor;
     }
 
-    public CauseStatus getStatus() {
+    public CampaignStatus getStatus() {
         return status;
     }
 
-    public void setStatus(CauseStatus status) {
+    public void setStatus(CampaignStatus status) {
         this.status = status;
     }
 

@@ -1,7 +1,7 @@
 package edu.cit.cosina.altru.donation.service;
 
 import edu.cit.cosina.altru.campaign.service.CampaignService;
-import edu.cit.cosina.altru.cause.Cause;
+import edu.cit.cosina.altru.campaign.Campaign;
 import edu.cit.cosina.altru.common.exception.BadRequestException;
 import edu.cit.cosina.altru.donation.Donation;
 import edu.cit.cosina.altru.donation.DonationRepository;
@@ -33,7 +33,7 @@ public class DonationService {
             throw new BadRequestException("Amount must be greater than 0");
         }
 
-        Cause campaign = campaignService.getPublishedCampaignForDonation(campaignId);
+        Campaign campaign = campaignService.getPublishedCampaignForDonation(campaignId);
 
         Donation donation = new Donation();
         donation.setUser(user);

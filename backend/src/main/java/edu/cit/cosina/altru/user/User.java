@@ -1,7 +1,7 @@
 package edu.cit.cosina.altru.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.cit.cosina.altru.cause.Cause;
+import edu.cit.cosina.altru.campaign.Campaign;
 import edu.cit.cosina.altru.donation.Donation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,7 +45,7 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "author")
     @JsonIgnore
-    private Set<Cause> campaigns;
+    private Set<Campaign> campaigns;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore

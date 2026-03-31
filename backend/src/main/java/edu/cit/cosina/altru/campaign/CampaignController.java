@@ -1,4 +1,4 @@
-package edu.cit.cosina.altru.cause;
+package edu.cit.cosina.altru.campaign;
 
 import edu.cit.cosina.altru.campaign.dto.CampaignResponse;
 import edu.cit.cosina.altru.campaign.dto.CampaignUpsertRequest;
@@ -20,12 +20,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping({"/api/campaigns", "/api/causes"})
-public class CauseController {
+public class CampaignController {
 
     private final CampaignService campaignService;
     private final DonationService donationService;
 
-    public CauseController(CampaignService campaignService, DonationService donationService) {
+    public CampaignController(CampaignService campaignService, DonationService donationService) {
         this.campaignService = campaignService;
         this.donationService = donationService;
     }
@@ -80,7 +80,6 @@ public class CauseController {
         return ResponseEntity.ok(ApiResponse.success("Campaign deleted"));
     }
 
-    // Backward-compatible route during frontend transition.
     @PostMapping("/{id}/donate")
     public ResponseEntity<ApiResponse<DonationResponse>> legacyDonate(
         @PathVariable @NonNull Long id,

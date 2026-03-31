@@ -1,6 +1,6 @@
 package edu.cit.cosina.altru.donation;
 
-import edu.cit.cosina.altru.cause.Cause;
+import edu.cit.cosina.altru.campaign.Campaign;
 import edu.cit.cosina.altru.user.User;
 import jakarta.persistence.*;
 
@@ -21,7 +21,7 @@ public class Donation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id", nullable = false)
-    private Cause campaign;
+    private Campaign campaign;
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
@@ -50,11 +50,11 @@ public class Donation {
         this.user = user;
     }
 
-    public Cause getCampaign() {
+    public Campaign getCampaign() {
         return campaign;
     }
 
-    public void setCampaign(Cause campaign) {
+    public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
     }
 

@@ -16,7 +16,7 @@
 
 ## Architecture Improvement Sprint (One-at-a-Time)
 - [x] Improvement 1: Add centralized global exception handling with consistent API error envelope
-- [ ] Improvement 2: Complete Cause -> Campaign naming migration in backend model/package/table
+- [x] Improvement 2: Complete Cause -> Campaign naming migration in backend model/package (table kept as `causes` for safe compatibility)
 - [ ] Improvement 3: Add pagination and sorting for campaign listing endpoints
 - [ ] Improvement 4: Harden donation flow with idempotency key and fuller status lifecycle
 - [ ] Improvement 5: Add refresh token flow and productionized CORS/env config

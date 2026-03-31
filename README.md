@@ -7,6 +7,11 @@ The project currently uses a layered backend architecture:
 - DTO-based request/response flow
 - Standardized API envelope for success and error payloads
 
+Current naming state:
+- Domain model/package naming is migrated to `Campaign`
+- Compatibility routes under `/api/causes` are still available
+- Physical database table remains `causes` for non-breaking data compatibility
+
 ## Technologies Used
 - Backend:
   - Java 21
