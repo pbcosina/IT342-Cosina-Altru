@@ -364,7 +364,9 @@
     color: #ef8354;
     letter-spacing: 0.01em;
     transition: color 0.2s ease, transform 0.2s ease;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
 .cause-read-more:hover {

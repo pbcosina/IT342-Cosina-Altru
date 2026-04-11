@@ -12,6 +12,8 @@ public class DonationCreateRequest {
     private BigDecimal amount;
 
     private String idempotencyKey;
+    private boolean anonymous;
+    private String donorMessage;
 
     public BigDecimal getAmount() {
         return amount;
@@ -27,5 +29,21 @@ public class DonationCreateRequest {
 
     public void setIdempotencyKey(String idempotencyKey) {
         this.idempotencyKey = idempotencyKey;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
+    }
+
+    public String getDonorMessage() {
+        return donorMessage;
+    }
+
+    public void setDonorMessage(String donorMessage) {
+        this.donorMessage = donorMessage;
     }
 }

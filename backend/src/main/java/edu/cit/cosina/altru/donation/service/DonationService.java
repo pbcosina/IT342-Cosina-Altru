@@ -8,6 +8,7 @@ import edu.cit.cosina.altru.donation.DonationRepository;
 import edu.cit.cosina.altru.donation.DonationStatus;
 import edu.cit.cosina.altru.donation.dto.DonationCreateRequest;
 import edu.cit.cosina.altru.donation.dto.DonationResponse;
+import edu.cit.cosina.altru.notification.service.NotificationService;
 import edu.cit.cosina.altru.user.User;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,16 @@ public class DonationService {
 
     private final DonationRepository donationRepository;
     private final CampaignService campaignService;
+    private final NotificationService notificationService;
 
-    public DonationService(DonationRepository donationRepository, CampaignService campaignService) {
+    public DonationService(
+        DonationRepository donationRepository,
+        CampaignService campaignService,
+        NotificationService notificationService
+    ) {
         this.donationRepository = donationRepository;
         this.campaignService = campaignService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -51,6 +58,8 @@ public class DonationService {
         donation.setAmount(amount);
         donation.setStatus(DonationStatus.PENDING);
         donation.setIdempotencyKey(idempotencyKey);
+        donation.setAnonymousDonation(request.isAnonymous());
+        donation.setDonorMessage(request.getDonorMessage() == null ? null : request.getDonorMessage().trim());
         Donation savedDonation = donationRepository.save(donation);
 
         campaign.setCurrentDonation(campaign.getCurrentDonation().add(amount));
@@ -58,6 +67,12 @@ public class DonationService {
         savedDonation.setPaymentReference("INT-" + savedDonation.getId());
         savedDonation.setProcessedAt(LocalDateTime.now());
         savedDonation.setFailureReason(null);
+        notificationService.createSystem(
+            user,
+            "Donation successful",
+            "You donated " + amount + " to " + campaign.getTitle(),
+            "DONATION"
+        );
 
         return toResponse(donationRepository.save(savedDonation));
     }
@@ -66,16 +81,28 @@ public class DonationService {
         return donationRepository.findByUserOrderByCreatedAtDesc(user).stream().map(this::toResponse).toList();
     }
 
+    public List<DonationResponse> getCampaignDonors(Long campaignId) {
+        return donationRepository.findTop10ByCampaignIdOrderByCreatedAtDesc(campaignId)
+            .stream()
+            .filter(donation -> DonationStatus.COMPLETED.equals(donation.getStatus()))
+            .map(this::toResponse)
+            .toList();
+    }
+
     public DonationResponse toResponse(Donation donation) {
         DonationResponse response = new DonationResponse();
         response.setId(donation.getId());
         response.setUserId(donation.getUser().getId());
         response.setCampaignId(donation.getCampaign().getId());
+        response.setCampaignTitle(donation.getCampaign().getTitle());
         response.setAmount(donation.getAmount());
         response.setStatus(donation.getStatus().name());
         response.setIdempotencyKey(donation.getIdempotencyKey());
         response.setPaymentReference(donation.getPaymentReference());
         response.setFailureReason(donation.getFailureReason());
+        response.setAnonymous(donation.isAnonymousDonation());
+        response.setDonorName(donation.isAnonymousDonation() ? "Anonymous" : donation.getUser().getName());
+        response.setDonorMessage(donation.getDonorMessage());
         response.setProcessedAt(donation.getProcessedAt());
         response.setCreatedAt(donation.getCreatedAt());
         return response;

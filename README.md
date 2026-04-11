@@ -1,5 +1,3 @@
-# Scope for This Session (Session 1)
-
 ## Project Description
 Altru is a full-stack fundraising platform that enables users to launch and support campaigns through a secure and scalable flow. This session delivers a Spring Boot backend and a React web application where users can register, sign in, refresh sessions, manage campaigns, donate to published campaigns, and access protected account/dashboard features with JWT-based authentication.
 

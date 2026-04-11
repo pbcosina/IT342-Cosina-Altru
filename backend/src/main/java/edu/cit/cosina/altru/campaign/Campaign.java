@@ -58,6 +58,9 @@ public class Campaign {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column
+    private LocalDateTime endDate;
+
     @PrePersist
     void onCreate() {
         createdAt = LocalDateTime.now();
@@ -156,5 +159,13 @@ public class Campaign {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 }

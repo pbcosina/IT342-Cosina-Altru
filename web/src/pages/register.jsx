@@ -90,7 +90,14 @@ const Register = () => {
                     {/* Error */}
                     {error && (
                         <div className="auth-alert" role="alert">
-                            <span>⚠</span> {error}
+                            <span className="auth-alert-icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 9v4" />
+                                    <path d="M12 17h.01" />
+                                    <path d="M10.3 3.5 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.5a2 2 0 0 0-3.4 0Z" />
+                                </svg>
+                            </span>
+                            {error}
                         </div>
                     )}
 

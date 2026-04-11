@@ -9,6 +9,7 @@ import edu.cit.cosina.altru.common.api.PagedResponse;
 import edu.cit.cosina.altru.common.exception.ForbiddenOperationException;
 import edu.cit.cosina.altru.common.exception.ResourceNotFoundException;
 import edu.cit.cosina.altru.user.User;
+import edu.cit.cosina.altru.donation.DonationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Service
@@ -24,9 +27,11 @@ public class CampaignService {
     private static final String CAMPAIGN_NOT_FOUND = "Campaign not found";
 
     private final CampaignRepository campaignRepository;
+    private final DonationRepository donationRepository;
 
-    public CampaignService(CampaignRepository campaignRepository) {
+    public CampaignService(CampaignRepository campaignRepository, DonationRepository donationRepository) {
         this.campaignRepository = campaignRepository;
+        this.donationRepository = donationRepository;
     }
 
     public PagedResponse<CampaignResponse> getPublishedCampaigns(
@@ -118,6 +123,7 @@ public class CampaignService {
             throw new ForbiddenOperationException("Not allowed to delete this campaign");
         }
 
+        donationRepository.deleteByCampaignId(campaign.getId());
         campaignRepository.delete(campaign);
     }
 
@@ -154,6 +160,13 @@ public class CampaignService {
         response.setAuthorName(campaign.getAuthor().getName());
         response.setCreatedAt(campaign.getCreatedAt());
         response.setUpdatedAt(campaign.getUpdatedAt());
+        LocalDateTime effectiveEndDate = campaign.getEndDate() != null
+            ? campaign.getEndDate()
+            : campaign.getCreatedAt().plusDays(30);
+        response.setEndDate(effectiveEndDate);
+        response.setDonationCount(donationRepository.countByCampaignId(campaign.getId()));
+        long daysRemaining = ChronoUnit.DAYS.between(LocalDateTime.now(), effectiveEndDate);
+        response.setDaysRemaining(Math.max(daysRemaining, 0));
         return response;
     }
 
@@ -170,6 +183,9 @@ public class CampaignService {
             status = CampaignStatus.valueOf(request.getStatus().trim().toUpperCase());
         }
         campaign.setStatus(status);
+        if (campaign.getEndDate() == null) {
+            campaign.setEndDate(LocalDateTime.now().plusDays(30));
+        }
     }
 
     private Sort buildSort(String sortBy, String sortDirection) {

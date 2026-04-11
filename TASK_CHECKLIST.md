@@ -16,13 +16,13 @@
 - [x] Add pagination and sorting for campaign listing endpoints
 - [x] Harden donation flow with idempotency key and fuller status lifecycle
 - [x] Add refresh token flow and productionized CORS/env config
+- [x] Add dashboard activity feed
+- [x] Improve dashboard with real summary cards
 
 ## IN-PROGRESS
+- [ ] Improve campaign and donation UX with loading, empty, and error states
 
 ## TODO
 - [ ] Add automated integration tests for auth endpoints and protected route access
 - [ ] Add mobile app source folder and concrete mobile startup commands
-- [ ] Improve dashboard with real summary cards (total raised, active campaigns, recent donations)
-- [ ] Add dashboard activity feed (latest donations and campaign updates)
-- [ ] Improve campaign and donation UX with loading, empty, and error states
 - [ ] Add basic charts/analytics section for personal fundraising progress

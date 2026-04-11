@@ -20,6 +20,7 @@ export const authApi = {
 
 export const usersApi = {
   me: () => apiClient.get('/users/me'),
+  updateMe: (payload) => apiClient.put('/users/me', payload),
 };
 
 export const campaignsApi = {
@@ -33,10 +34,25 @@ export const campaignsApi = {
   remove: (id) => apiClient.delete(`/campaigns/${id}`),
 };
 
+export const bookmarksApi = {
+  list: async () => normalizeList(await apiClient.get('/bookmarks')),
+  add: (campaignId) => apiClient.post(`/bookmarks/${campaignId}`),
+  remove: (campaignId) => apiClient.delete(`/bookmarks/${campaignId}`),
+};
+
+export const dashboardApi = {
+  summary: () => apiClient.get('/dashboard/summary'),
+};
+
+export const notificationsApi = {
+  my: async () => normalizeList(await apiClient.get('/notifications/me')),
+  create: (payload) => apiClient.post('/notifications', payload),
+};
+
 export const donationsApi = {
-  create: (campaignId, amount, idempotencyKey) => apiClient.post(
+  create: (campaignId, amount, idempotencyKey, anonymous = false, donorMessage = '') => apiClient.post(
     `/donations/campaigns/${campaignId}`,
-    { amount, idempotencyKey },
+    { amount, idempotencyKey, anonymous, donorMessage },
     idempotencyKey
       ? {
           headers: {
@@ -46,4 +62,5 @@ export const donationsApi = {
       : undefined
   ),
   my: () => apiClient.get('/donations/me'),
+  byCampaign: (campaignId) => apiClient.get(`/donations/campaigns/${campaignId}`),
 };

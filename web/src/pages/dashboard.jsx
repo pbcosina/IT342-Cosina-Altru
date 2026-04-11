@@ -1,12 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { dashboardApi } from '../services/apiService';
 import './dashboard.css';
 
 const Dashboard = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
+    const [summary, setSummary] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchSummary = async () => {
+            try {
+                setLoading(true);
+                const data = await dashboardApi.summary();
+                setSummary(data);
+                setError('');
+            } catch (err) {
+                setError(err.message || 'Failed to load dashboard summary.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSummary();
+    }, []);
 
     const handleLogout = () => {
         logout();
@@ -79,8 +100,15 @@ const Dashboard = () => {
                 <div className="content-body">
                     <div className="dashboard-welcome">
                         <h1>Welcome back, {user?.name}!</h1>
-                        <p>Explore causes and start making a difference today.</p>
+                        <p>Explore causes, track your impact, and grow your campaigns.</p>
                     </div>
+
+                    <div className="quick-actions" style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                        <button className="quick-action-btn quick-action-primary" onClick={() => navigate('/fundraise')} type="button">Create Campaign</button>
+                        <button className="quick-action-btn quick-action-secondary" onClick={() => navigate('/campaigns')} type="button">Browse Causes</button>
+                    </div>
+
+                    {error && <p className="donation-msg error" style={{ marginBottom: '1rem' }}>{error}</p>}
 
                     <div className="search-container">
                         <div className="search-bar-wrapper">
@@ -101,20 +129,44 @@ const Dashboard = () => {
 
                     <div className="quick-stats">
                         <div className="stat-card">
-                            <span className="stat-card-label">Platform</span>
-                            <span className="stat-card-value">Altru</span>
-                            <span className="stat-card-sub">Built for good</span>
+                            <span className="stat-card-label">Donations Received</span>
+                            <span className="stat-card-value">{loading ? '...' : (summary?.totalDonationsReceived ?? 0)}</span>
+                            <span className="stat-card-sub">Across your campaigns</span>
                         </div>
                         <div className="stat-card">
-                            <span className="stat-card-label">Your Causes</span>
-                            <span className="stat-card-value">—</span>
-                            <span className="stat-card-sub">Go to Fundraise</span>
+                            <span className="stat-card-label">Active Campaigns</span>
+                            <span className="stat-card-value">{loading ? '...' : (summary?.activeCampaigns ?? 0)}</span>
+                            <span className="stat-card-sub">Currently published</span>
                         </div>
                         <div className="stat-card">
-                            <span className="stat-card-label">Explore</span>
-                            <span className="stat-card-value">—</span>
-                            <span className="stat-card-sub">Browse all causes</span>
+                            <span className="stat-card-label">Total Amount Raised</span>
+                            <span className="stat-card-value">{loading ? '...' : `₱${Number(summary?.totalAmountRaised ?? 0).toLocaleString()}`}</span>
+                            <span className="stat-card-sub">From all donations</span>
                         </div>
+                    </div>
+
+                    <div className="stat-card" style={{ marginTop: '1rem' }}>
+                        <span className="stat-card-label">Recent Activity</span>
+                        {loading ? (
+                            <p className="stat-card-sub">Loading activity...</p>
+                        ) : summary?.recentActivity?.length ? (
+                            <div style={{ display: 'grid', gap: '0.65rem', marginTop: '0.75rem' }}>
+                                {summary.recentActivity.map((item, idx) => (
+                                    <div key={`${item.type}-${item.createdAt}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'center' }}>
+                                        <div>
+                                            <div style={{ fontWeight: 600 }}>{item.title}</div>
+                                            <div className="stat-card-sub">{item.subtitle}</div>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            {item.amount != null && <div style={{ fontWeight: 600 }}>₱{Number(item.amount).toLocaleString()}</div>}
+                                            <div className="stat-card-sub">{new Date(item.createdAt).toLocaleDateString()}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="stat-card-sub">No recent activity yet.</p>
+                        )}
                     </div>
                 </div>
             </main>

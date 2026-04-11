@@ -8,11 +8,15 @@ public class DonationResponse {
     private Long id;
     private Long userId;
     private Long campaignId;
+    private String campaignTitle;
     private BigDecimal amount;
     private String status;
     private String idempotencyKey;
     private String paymentReference;
     private String failureReason;
+    private String donorName;
+    private boolean anonymous;
+    private String donorMessage;
     private LocalDateTime processedAt;
     private LocalDateTime createdAt;
 
@@ -48,6 +52,14 @@ public class DonationResponse {
         this.amount = amount;
     }
 
+    public String getCampaignTitle() {
+        return campaignTitle;
+    }
+
+    public void setCampaignTitle(String campaignTitle) {
+        this.campaignTitle = campaignTitle;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -78,6 +90,30 @@ public class DonationResponse {
 
     public void setFailureReason(String failureReason) {
         this.failureReason = failureReason;
+    }
+
+    public String getDonorName() {
+        return donorName;
+    }
+
+    public void setDonorName(String donorName) {
+        this.donorName = donorName;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
+    }
+
+    public String getDonorMessage() {
+        return donorMessage;
+    }
+
+    public void setDonorMessage(String donorMessage) {
+        this.donorMessage = donorMessage;
     }
 
     public LocalDateTime getProcessedAt() {

@@ -39,4 +39,9 @@ public class DonationController {
     public ResponseEntity<ApiResponse<List<DonationResponse>>> getMyDonations(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(ApiResponse.success("Donations fetched", donationService.getMyDonations(user)));
     }
+
+    @GetMapping("/campaigns/{campaignId}")
+    public ResponseEntity<ApiResponse<List<DonationResponse>>> getCampaignDonors(@PathVariable Long campaignId) {
+        return ResponseEntity.ok(ApiResponse.success("Campaign donors fetched", donationService.getCampaignDonors(campaignId)));
+    }
 }

@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.List;
+import java.math.BigDecimal;
 
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     Page<Campaign> findByAuthor(User author, Pageable pageable);
@@ -17,6 +19,11 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     Page<Campaign> findByStatusAndCategoryIgnoreCase(CampaignStatus status, String category, Pageable pageable);
     Page<Campaign> findByStatusAndTitleContainingIgnoreCase(CampaignStatus status, String title, Pageable pageable);
     Page<Campaign> findByStatusAndTitleContainingIgnoreCaseAndCategoryIgnoreCase(CampaignStatus status, String title, String category, Pageable pageable);
+    long countByAuthorAndStatus(User author, CampaignStatus status);
+    List<Campaign> findTop5ByAuthorOrderByUpdatedAtDesc(User author);
+
+    @Query("select sum(c.currentDonation) from Campaign c where c.author = :author")
+    BigDecimal sumCurrentDonationByAuthor(@Param("author") User author);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from Campaign c where c.id = :id")

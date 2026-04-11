@@ -1,20 +1,12 @@
 package edu.cit.cosina.altru.user.dto;
 
-public class UserProfileResponse {
+public class UserUpdateRequest {
 
-    private Long id;
     private String name;
     private String email;
-    private String role;
+    private String currentPassword;
+    private String newPassword;
     private String profileImageUrl;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -32,12 +24,20 @@ public class UserProfileResponse {
         this.email = email;
     }
 
-    public String getRole() {
-        return role;
+    public String getCurrentPassword() {
+        return currentPassword;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 
     public String getProfileImageUrl() {

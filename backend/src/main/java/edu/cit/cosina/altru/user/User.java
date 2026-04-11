@@ -39,6 +39,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(length = 1024)
+    private String profileImageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
     private Role role = Role.USER;
@@ -89,6 +92,14 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public Role getRole() {

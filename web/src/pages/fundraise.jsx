@@ -18,18 +18,39 @@ const CATEGORIES = [
     'others: state',
 ];
 
-const CATEGORY_ICONS = {
-    'Health': '🏥',
-    'Education': '📚',
-    'disaster': '🌪️',
-    'community development': '🏘️',
-    'children/youth': '🧒',
-    'environment': '🌿',
-    'animal welfare': '🐾',
-    'sports/recreation': '⚽',
-    'memorial/funeral': '🕊️',
-    'others: state': '📋',
+const ICON_PATHS = {
+    health: 'M3 11h18M7 7v8M17 7v8',
+    education: 'M4 6h16v12H4z M8 6v12',
+    disaster: 'M13 2 4 14h6l-1 8 9-12h-6z',
+    community: 'M3 11l9-7 9 7v9h-6v-6H9v6H3z',
+    children: 'M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm-7 9a7 7 0 0 1 14 0',
+    environment: 'M12 21C7 18 5 14 5 10c0-3 2-5 5-7 3 2 5 4 5 7 0 4-2 8-3 11z',
+    animal: 'M8 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm8 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 18c1.5-2 3.5-3 6-3s4.5 1 6 3c0 2-2 3-6 3s-6-1-6-3z',
+    sports: 'M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9zm0 0v18m-9-9h18',
+    memorial: 'M12 3v18M6 9h12M8 21h8',
+    others: 'M7 4h10l2 2v14H5V4zm3 5h6M10 13h6M10 17h4',
+    yourself: 'M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm-7 9a7 7 0 0 1 14 0',
+    someoneElse: 'M16 11a3 3 0 1 0-2.8-4H13a3 3 0 0 0-2.8 4M8 12a3 3 0 1 0-3-3 3 3 0 0 0 3 3m0 0v1m8-2v2m-11 8a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6',
+    charity: 'M3 10h18M5 10V7l7-4 7 4v3M7 10v8M12 10v8M17 10v8M4 21h16'
 };
+
+const Icon = ({ name, size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d={ICON_PATHS[name]} />
+    </svg>
+);
+
+const ArrowLeftIcon = ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="m15 18-6-6 6-6" />
+    </svg>
+);
+
+const ArrowRightIcon = ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="m9 18 6-6-6-6" />
+    </svg>
+);
 
 const initialForm = {
     title: '',
@@ -38,6 +59,21 @@ const initialForm = {
     donationGoal: '',
     imageUrl: '',
     whoFor: ''
+};
+
+const VIEW_KEY = 'campaignViews';
+
+const readViews = () => {
+    try {
+        const raw = localStorage.getItem(VIEW_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch {
+        return {};
+    }
+};
+
+const writeViews = (views) => {
+    localStorage.setItem(VIEW_KEY, JSON.stringify(views));
 };
 
 // Steps: 1=whoFor, 2=title, 3=category, 4=goal, 5=image+story
@@ -77,6 +113,19 @@ StepBar.propTypes = {
     formStep: PropTypes.number.isRequired,
 };
 
+Icon.propTypes = {
+    name: PropTypes.string.isRequired,
+    size: PropTypes.number,
+};
+
+ArrowLeftIcon.propTypes = {
+    size: PropTypes.number,
+};
+
+ArrowRightIcon.propTypes = {
+    size: PropTypes.number,
+};
+
 const Fundraise = () => {
     const { user } = useAuth();
     const [view, setView] = useState('list');       // 'list' | 'steps' | 'preview'
@@ -86,6 +135,7 @@ const Fundraise = () => {
     const [currentId, setCurrentId] = useState(null);
     const [message, setMessage] = useState('');
     const [stepError, setStepError] = useState('');
+    const [viewMap, setViewMap] = useState(() => readViews());
 
     const fetchMyCauses = useCallback(async () => {
         try {
@@ -131,6 +181,32 @@ const Fundraise = () => {
             fetchMyCauses();
         } catch (error) {
             console.error('Delete failed', error);
+        }
+    };
+
+    const bumpViewCount = (campaignId) => {
+        if (!campaignId) return;
+        const current = readViews();
+        const next = { ...current, [campaignId]: (current[campaignId] || 0) + 1 };
+        writeViews(next);
+        setViewMap(next);
+    };
+
+    const handleMarkCompleted = async (cause) => {
+        try {
+            await campaignsApi.update(cause.id, {
+                title: cause.title,
+                story: cause.story,
+                category: cause.category,
+                donationGoal: cause.donationGoal,
+                imageUrl: cause.imageUrl,
+                whoFor: cause.whoFor,
+                status: 'COMPLETED',
+            });
+            setMessage('Campaign marked as completed.');
+            fetchMyCauses();
+        } catch (error) {
+            setMessage(error.message || 'Unable to update campaign status.');
         }
     };
 
@@ -260,16 +336,23 @@ const Fundraise = () => {
                                             />
                                             <div className="cause-info">
                                                 <span className={`cause-status-badge ${cause.status === 'PUBLISHED' ? 'published' : 'draft'}`}>
-                                                    {cause.status === 'PUBLISHED' ? '● Published' : '○ Draft'}
+                                                    {cause.status === 'PUBLISHED' ? '● Published' : cause.status === 'COMPLETED' ? '✓ Completed' : '○ Draft'}
                                                 </span>
                                                 <h3 className="cause-title">{cause.title}</h3>
                                                 <p className="cause-meta-row">
                                                     Goal: <strong>₱{Number(cause.donationGoal).toLocaleString()}</strong> &nbsp;·&nbsp;
                                                     Raised: <strong>₱{Number(cause.currentDonation).toLocaleString()}</strong>
                                                 </p>
+                                                <p className="cause-meta-row">
+                                                    Donations: <strong>{cause.donationCount ?? 0}</strong> &nbsp;·&nbsp;
+                                                    Views: <strong>{viewMap[cause.id] || 0}</strong>
+                                                </p>
                                                 <div className="card-actions">
                                                     <button onClick={() => handleEditClick(cause)} className="edit-btn">Edit</button>
                                                     <button onClick={() => handleDelete(cause.id)} className="delete-btn">Delete</button>
+                                                    {cause.status === 'PUBLISHED' && (
+                                                        <button onClick={() => handleMarkCompleted(cause)} className="edit-btn">Complete</button>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -300,17 +383,17 @@ const Fundraise = () => {
 
                                     <div className="who-for-options">
                                         {[
-                                            { label: 'Yourself', icon: '🙋', desc: 'Funds go directly to your account for personal use' },
-                                            { label: 'Someone Else', icon: '🤝', desc: "You'll collect and distribute funds to a beneficiary" },
-                                            { label: 'Charity', icon: '🏛️', desc: 'Raise on behalf of a registered non-profit organization' },
-                                        ].map(({ label, icon, desc }) => (
+                                            { label: 'Yourself', iconKey: 'yourself', desc: 'Funds go directly to your account for personal use' },
+                                            { label: 'Someone Else', iconKey: 'someoneElse', desc: "You'll collect and distribute funds to a beneficiary" },
+                                            { label: 'Charity', iconKey: 'charity', desc: 'Raise on behalf of a registered non-profit organization' },
+                                        ].map(({ label, iconKey, desc }) => (
                                             <button
                                                 className={`who-for-card ${formData.whoFor === label ? 'selected' : ''}`}
                                                 key={label}
                                                 onClick={() => handleWhoForSelect(label)}
                                                 type="button"
                                             >
-                                                <div className="icon-placeholder">{icon}</div>
+                                                <div className="icon-placeholder"><Icon name={iconKey} size={20} /></div>
                                                 <div className="who-for-text">
                                                     <h3>{label}</h3>
                                                     <p>{desc}</p>
@@ -349,8 +432,8 @@ const Fundraise = () => {
                                     </div>
 
                                     <div className="step-nav">
-                                        <button className="back-link" onClick={handleBack}>← Back</button>
-                                        <button className="next-btn" onClick={handleNext}>Continue →</button>
+                                        <button className="back-link" onClick={handleBack}><ArrowLeftIcon />Back</button>
+                                        <button className="next-btn" onClick={handleNext}>Continue<ArrowRightIcon /></button>
                                     </div>
                                 </div>
                             )}
@@ -365,7 +448,21 @@ const Fundraise = () => {
                                     </div>
 
                                     <div className="category-grid">
-                                        {CATEGORIES.map(cat => (
+                                        {CATEGORIES.map(cat => {
+                                            const categoryIconKey = {
+                                                Health: 'health',
+                                                Education: 'education',
+                                                disaster: 'disaster',
+                                                'community development': 'community',
+                                                'children/youth': 'children',
+                                                environment: 'environment',
+                                                'animal welfare': 'animal',
+                                                'sports/recreation': 'sports',
+                                                'memorial/funeral': 'memorial',
+                                                'others: state': 'others',
+                                            }[cat] || 'others';
+
+                                            return (
                                             <button
                                                 key={cat}
                                                 type="button"
@@ -375,17 +472,18 @@ const Fundraise = () => {
                                                     setStepError('');
                                                 }}
                                             >
-                                                <span className="category-tile-icon">{CATEGORY_ICONS[cat]}</span>
+                                                <span className="category-tile-icon"><Icon name={categoryIconKey} size={20} /></span>
                                                 <span className="category-tile-label">
                                                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
                                                 </span>
                                             </button>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
 
                                     <div className="step-nav">
-                                        <button className="back-link" onClick={handleBack}>← Back</button>
-                                        <button className="next-btn" onClick={handleNext}>Continue →</button>
+                                        <button className="back-link" onClick={handleBack}><ArrowLeftIcon />Back</button>
+                                        <button className="next-btn" onClick={handleNext}>Continue<ArrowRightIcon /></button>
                                     </div>
                                 </div>
                             )}
@@ -419,8 +517,8 @@ const Fundraise = () => {
                                     )}
 
                                     <div className="step-nav">
-                                        <button className="back-link" onClick={handleBack}>← Back</button>
-                                        <button className="next-btn" onClick={handleNext}>Continue →</button>
+                                        <button className="back-link" onClick={handleBack}><ArrowLeftIcon />Back</button>
+                                        <button className="next-btn" onClick={handleNext}>Continue<ArrowRightIcon /></button>
                                     </div>
                                 </div>
                             )}
@@ -467,8 +565,8 @@ const Fundraise = () => {
                                     </div>
 
                                     <div className="step-nav">
-                                        <button className="back-link" onClick={handleBack}>← Back</button>
-                                        <button className="next-btn" onClick={handleNext}>Preview Campaign →</button>
+                                        <button className="back-link" onClick={handleBack}><ArrowLeftIcon />Back</button>
+                                        <button className="next-btn" onClick={handleNext}>Preview Campaign<ArrowRightIcon /></button>
                                     </div>
                                 </div>
                             )}
@@ -478,7 +576,7 @@ const Fundraise = () => {
                     {view === 'edit' && (
                         <div className="fundraise-form-view">
                             <div className="edit-form-header">
-                                <button className="back-link" onClick={() => { setCurrentId(null); setView('list'); }}>← Back</button>
+                                <button className="back-link" onClick={() => { setCurrentId(null); setView('list'); }}><ArrowLeftIcon />Back</button>
                                 <div>
                                     <p className="form-step-label">Editing Campaign</p>
                                     <h2>Edit Campaign Details</h2>
@@ -558,7 +656,7 @@ const Fundraise = () => {
                                     />
                                 </div>
 
-                                <button type="submit" className="preview-btn">Preview Changes →</button>
+                                <button type="submit" className="preview-btn">Preview Changes<ArrowRightIcon /></button>
                             </form>
                         </div>
                     )}
@@ -567,7 +665,7 @@ const Fundraise = () => {
                     {view === 'preview' && (
                         <div className="preview-view">
                             <div className="preview-header">
-                                <button className="back-link" onClick={() => currentId ? setView('edit') : (setView('steps'), setFormStep(5))}>← Back to Edit</button>
+                                <button className="back-link" onClick={() => currentId ? setView('edit') : (setView('steps'), setFormStep(5))}><ArrowLeftIcon />Back to Edit</button>
                                 <h2>Preview Campaign</h2>
                             </div>
 
@@ -588,8 +686,13 @@ const Fundraise = () => {
                                 </div>
                             </div>
 
+                            <div className="cause-meta" style={{ marginTop: '0.75rem' }}>
+                                <span className="cause-author-meta">Donations: {currentId ? (myCampaigns.find(item => item.id === currentId)?.donationCount ?? 0) : 0}</span>
+                                <span className="cause-author-meta">Views: {currentId ? (viewMap[currentId] || 0) : 0}</span>
+                            </div>
+
                             <div className="publish-actions">
-                                <button className="draft-btn" onClick={() => handleSave('DRAFT')}>Save as Draft</button>
+                                <button className="draft-btn" onClick={() => { if (currentId) bumpViewCount(currentId); handleSave('DRAFT'); }}>Save as Draft</button>
                                 <button className="publish-btn" onClick={() => handleSave('PUBLISHED')}>
                                     {currentId ? 'Update & Publish' : 'Publish Campaign'}
                                 </button>

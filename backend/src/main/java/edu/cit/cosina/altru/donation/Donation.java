@@ -44,24 +44,21 @@ public class Donation {
     @Column(name = "failure_reason", length = 255)
     private String failureReason;
 
+    @Column(name = "is_anonymous", nullable = false)
+    private boolean anonymousDonation;
+
+    @Column(name = "donor_message", length = 500)
+    private String donorMessage;
+
     @Column(name = "processed_at")
     private LocalDateTime processedAt;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
     @PrePersist
     void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    void onUpdate() {
-        updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -136,7 +133,19 @@ public class Donation {
         this.processedAt = processedAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public boolean isAnonymousDonation() {
+        return anonymousDonation;
+    }
+
+    public void setAnonymousDonation(boolean anonymousDonation) {
+        this.anonymousDonation = anonymousDonation;
+    }
+
+    public String getDonorMessage() {
+        return donorMessage;
+    }
+
+    public void setDonorMessage(String donorMessage) {
+        this.donorMessage = donorMessage;
     }
 }

@@ -18,6 +18,9 @@ public class CampaignResponse {
     private String authorName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime endDate;
+    private Long donationCount;
+    private Long daysRemaining;
 
     public Long getId() {
         return id;
@@ -121,5 +124,29 @@ public class CampaignResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public Long getDonationCount() {
+        return donationCount;
+    }
+
+    public void setDonationCount(Long donationCount) {
+        this.donationCount = donationCount;
+    }
+
+    public Long getDaysRemaining() {
+        return daysRemaining;
+    }
+
+    public void setDaysRemaining(Long daysRemaining) {
+        this.daysRemaining = daysRemaining;
     }
 }
