@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import shapeLanding from '../assets/shape-landing.png';
-import './landing.css';
+import shapeLanding from '../../../assets/shape-landing.png';
+import '../styles/landing.css';
 
 const features = [
     {

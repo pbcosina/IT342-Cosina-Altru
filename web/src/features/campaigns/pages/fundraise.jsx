@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useAuth } from '../context/AuthContext';
-import { campaignsApi } from '../services/apiService';
-import Sidebar from '../components/sidebar';
-import './fundraise.css';
+import { useAuth } from '../../../core/context/AuthContext';
+import { campaignsApi } from '../../../core/services/apiService';
+import Sidebar from '../../../core/components/sidebar';
+import '../styles/fundraise.css';
 
 const CATEGORIES = [
     'Health',
@@ -273,6 +273,16 @@ const Fundraise = () => {
         setView('preview');
     };
 
+    const getStatusLabel = (status) => {
+        if (status === 'PUBLISHED') {
+            return '● Published';
+        }
+        if (status === 'COMPLETED') {
+            return '✓ Completed';
+        }
+        return '○ Draft';
+    };
+
     const handleSave = async (status) => {
         try {
             const payload = { ...formData, status };
@@ -336,7 +346,7 @@ const Fundraise = () => {
                                             />
                                             <div className="cause-info">
                                                 <span className={`cause-status-badge ${cause.status === 'PUBLISHED' ? 'published' : 'draft'}`}>
-                                                    {cause.status === 'PUBLISHED' ? '● Published' : cause.status === 'COMPLETED' ? '✓ Completed' : '○ Draft'}
+                                                    {getStatusLabel(cause.status)}
                                                 </span>
                                                 <h3 className="cause-title">{cause.title}</h3>
                                                 <p className="cause-meta-row">
@@ -692,7 +702,7 @@ const Fundraise = () => {
                             </div>
 
                             <div className="publish-actions">
-                                <button className="draft-btn" onClick={() => { if (currentId) bumpViewCount(currentId); handleSave('DRAFT'); }}>Save as Draft</button>
+                                <button className="draft-btn" onClick={() => { if (currentId) { bumpViewCount(currentId); } handleSave('DRAFT'); }}>Save as Draft</button>
                                 <button className="publish-btn" onClick={() => handleSave('PUBLISHED')}>
                                     {currentId ? 'Update & Publish' : 'Publish Campaign'}
                                 </button>

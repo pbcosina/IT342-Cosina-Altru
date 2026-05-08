@@ -1,59 +1,22 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../../core/context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import shapeAuth from '../assets/shape-auth.png';
-import './auth.css';
+import shapeAuth from '../../../assets/shape-auth.png';
+import '../styles/auth.css';
 
-const Register = () => {
-    const [name, setName] = useState('');
+const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
-        // Validate email
-        if (!email.includes('@') || !email.includes('.')) {
-            setError('Please enter a valid email address');
-            return;
-        }
-
-        // Validate passwords match
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-
-        // Validate password requirements
-        if (password.length < 8) {
-            setError('Password must be at least 8 characters');
-            return;
-        }
-        if (!/[A-Z]/.test(password)) {
-            setError('Password should have at least one uppercase letter');
-            return;
-        }
-        if (!/[a-z]/.test(password)) {
-            setError('Password should have at least one lowercase letter');
-            return;
-        }
-        if (!/\d/.test(password)) {
-            setError('Password should have at least one numeric digit');
-            return;
-        }
-        if (!/[^A-Za-z0-9]/.test(password)) {
-            setError('Password should have at least one symbol');
-            return;
-        }
-
         setLoading(true);
-        const result = await register(name, email, password);
+        const result = await login(email, password);
         setLoading(false);
         if (result.success) {
             navigate('/dashboard');
@@ -81,9 +44,9 @@ const Register = () => {
 
                     {/* Header */}
                     <div className="auth-form-header">
-                        <h1 className="auth-form-title">Create Account</h1>
+                        <h1 className="auth-form-title">Welcome back!</h1>
                         <p className="auth-form-subtitle">
-                            Get started with your account
+                            Enter your credentials to continue your journey
                         </p>
                     </div>
 
@@ -104,28 +67,12 @@ const Register = () => {
                     {/* Form */}
                     <form className="auth-form" onSubmit={handleSubmit}>
                         <div className="auth-input-group">
-                            <label className="auth-input-label" htmlFor="register-name">
-                                Name
-                            </label>
-                            <input
-                                className="auth-input"
-                                id="register-name"
-                                type="text"
-                                placeholder="Enter your name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                                autoComplete="name"
-                            />
-                        </div>
-
-                        <div className="auth-input-group">
-                            <label className="auth-input-label" htmlFor="register-email">
+                            <label className="auth-input-label" htmlFor="login-email">
                                 Email Address
                             </label>
                             <input
                                 className="auth-input"
-                                id="register-email"
+                                id="login-email"
                                 type="email"
                                 placeholder="Enter your email"
                                 value={email}
@@ -136,34 +83,18 @@ const Register = () => {
                         </div>
 
                         <div className="auth-input-group">
-                            <label className="auth-input-label" htmlFor="register-password">
+                            <label className="auth-input-label" htmlFor="login-password">
                                 Password
                             </label>
                             <input
                                 className="auth-input"
-                                id="register-password"
+                                id="login-password"
                                 type="password"
-                                placeholder="Create a password"
+                                placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                autoComplete="new-password"
-                            />
-                        </div>
-
-                        <div className="auth-input-group">
-                            <label className="auth-input-label" htmlFor="register-confirm-password">
-                                Confirm Password
-                            </label>
-                            <input
-                                className="auth-input"
-                                id="register-confirm-password"
-                                type="password"
-                                placeholder="Confirm your password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                                autoComplete="new-password"
+                                autoComplete="current-password"
                             />
                         </div>
 
@@ -171,16 +102,16 @@ const Register = () => {
                             className="auth-submit-btn"
                             type="submit"
                             disabled={loading}
-                            id="register-submit-btn"
+                            id="login-submit-btn"
                         >
-                            <span>{loading ? 'Creating account...' : 'Register'}</span>
+                            <span>{loading ? 'Signing in...' : 'Login'}</span>
                         </button>
                     </form>
 
                     {/* Footer */}
                     <p className="auth-form-footer">
-                        Already have an account?{' '}
-                        <Link to="/login">Sign in</Link>
+                        Don't have an account?{' '}
+                        <Link to="/register">Create here</Link>
                     </p>
                 </div>
             </div>
@@ -188,4 +119,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Login;

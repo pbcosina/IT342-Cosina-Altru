@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { campaignsApi, donationsApi } from '../services/apiService';
-import Sidebar from '../components/sidebar';
-import { useAuth } from '../context/AuthContext';
-import './causeDetails.css';
+import { campaignsApi, donationsApi } from '../../../core/services/apiService';
+import Sidebar from '../../../core/components/sidebar';
+import { useAuth } from '../../../core/context/AuthContext';
+import '../styles/causeDetails.css';
 
 const CauseDetails = () => {
     const { id } = useParams();
@@ -69,7 +69,7 @@ const CauseDetails = () => {
             await navigator.clipboard.writeText(link);
             setMessage('Campaign link copied to clipboard.');
         } catch (error) {
-            setMessage('Unable to copy link.');
+            setMessage(error.message || 'Unable to copy link.');
         }
     };
 
@@ -156,6 +156,7 @@ const CauseDetails = () => {
                             />
                             <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
                                 <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
+                                {' '}
                                 Donate anonymously
                             </label>
                             <button className="donate-btn" onClick={handleDonate}>Donate Now</button>

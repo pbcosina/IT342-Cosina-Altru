@@ -1,22 +1,59 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../../core/context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import shapeAuth from '../assets/shape-auth.png';
-import './auth.css';
+import shapeAuth from '../../../assets/shape-auth.png';
+import '../styles/auth.css';
 
-const Login = () => {
+const Register = () => {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { register } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        // Validate email
+        if (!email.includes('@') || !email.includes('.')) {
+            setError('Please enter a valid email address');
+            return;
+        }
+
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
+        // Validate password requirements
+        if (password.length < 8) {
+            setError('Password must be at least 8 characters');
+            return;
+        }
+        if (!/[A-Z]/.test(password)) {
+            setError('Password should have at least one uppercase letter');
+            return;
+        }
+        if (!/[a-z]/.test(password)) {
+            setError('Password should have at least one lowercase letter');
+            return;
+        }
+        if (!/\d/.test(password)) {
+            setError('Password should have at least one numeric digit');
+            return;
+        }
+        if (!/[^A-Za-z0-9]/.test(password)) {
+            setError('Password should have at least one symbol');
+            return;
+        }
+
         setLoading(true);
-        const result = await login(email, password);
+        const result = await register(name, email, password);
         setLoading(false);
         if (result.success) {
             navigate('/dashboard');
@@ -44,9 +81,9 @@ const Login = () => {
 
                     {/* Header */}
                     <div className="auth-form-header">
-                        <h1 className="auth-form-title">Welcome back!</h1>
+                        <h1 className="auth-form-title">Create Account</h1>
                         <p className="auth-form-subtitle">
-                            Enter your credentials to continue your journey
+                            Get started with your account
                         </p>
                     </div>
 
@@ -67,12 +104,28 @@ const Login = () => {
                     {/* Form */}
                     <form className="auth-form" onSubmit={handleSubmit}>
                         <div className="auth-input-group">
-                            <label className="auth-input-label" htmlFor="login-email">
+                            <label className="auth-input-label" htmlFor="register-name">
+                                Name
+                            </label>
+                            <input
+                                className="auth-input"
+                                id="register-name"
+                                type="text"
+                                placeholder="Enter your name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                autoComplete="name"
+                            />
+                        </div>
+
+                        <div className="auth-input-group">
+                            <label className="auth-input-label" htmlFor="register-email">
                                 Email Address
                             </label>
                             <input
                                 className="auth-input"
-                                id="login-email"
+                                id="register-email"
                                 type="email"
                                 placeholder="Enter your email"
                                 value={email}
@@ -83,18 +136,34 @@ const Login = () => {
                         </div>
 
                         <div className="auth-input-group">
-                            <label className="auth-input-label" htmlFor="login-password">
+                            <label className="auth-input-label" htmlFor="register-password">
                                 Password
                             </label>
                             <input
                                 className="auth-input"
-                                id="login-password"
+                                id="register-password"
                                 type="password"
-                                placeholder="Enter your password"
+                                placeholder="Create a password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                autoComplete="current-password"
+                                autoComplete="new-password"
+                            />
+                        </div>
+
+                        <div className="auth-input-group">
+                            <label className="auth-input-label" htmlFor="register-confirm-password">
+                                Confirm Password
+                            </label>
+                            <input
+                                className="auth-input"
+                                id="register-confirm-password"
+                                type="password"
+                                placeholder="Confirm your password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                                autoComplete="new-password"
                             />
                         </div>
 
@@ -102,16 +171,16 @@ const Login = () => {
                             className="auth-submit-btn"
                             type="submit"
                             disabled={loading}
-                            id="login-submit-btn"
+                            id="register-submit-btn"
                         >
-                            <span>{loading ? 'Signing in...' : 'Login'}</span>
+                            <span>{loading ? 'Creating account...' : 'Register'}</span>
                         </button>
                     </form>
 
                     {/* Footer */}
                     <p className="auth-form-footer">
-                        Don't have an account?{' '}
-                        <Link to="/register">Create here</Link>
+                        Already have an account?{' '}
+                        <Link to="/login">Sign in</Link>
                     </p>
                 </div>
             </div>
@@ -119,4 +188,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Register;

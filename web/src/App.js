@@ -1,14 +1,14 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import PrivateRoute from './components/privateRoute';
-import Landing from './pages/landing';
-import Login from './pages/login';
-import Register from './pages/register';
-import Dashboard from './pages/dashboard';
-import Causes from './pages/causes';
-import CauseDetails from './pages/causeDetails';
-import Fundraise from './pages/fundraise';
-import Settings from './pages/settings';
+import { AuthProvider } from './core/context/AuthContext';
+import PrivateRoute from './core/components/privateRoute';
+import Landing from './features/auth/pages/landing';
+import Login from './features/auth/pages/login';
+import Register from './features/auth/pages/register';
+import Dashboard from './features/dashboard/pages/dashboard';
+import Causes from './features/campaigns/pages/causes';
+import CauseDetails from './features/campaigns/pages/causeDetails';
+import Fundraise from './features/campaigns/pages/fundraise';
+import Settings from './features/settings/pages/settings';
 import './App.css';
 
 function App() {

@@ -1,8 +1,8 @@
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../../core/context/AuthContext';
 import { useEffect, useState } from 'react';
-import { donationsApi, usersApi } from '../services/apiService';
-import Sidebar from '../components/sidebar';
-import './settings.css';
+import { donationsApi, usersApi } from '../../../core/services/apiService';
+import Sidebar from '../../../core/components/sidebar';
+import '../styles/settings.css';
 
 const Settings = () => {
     const { user } = useAuth();
@@ -132,11 +132,11 @@ const Settings = () => {
                     <div className="settings-section">
                         <div className="settings-section-title">Donation History</div>
                         <div className="settings-card">
-                            {loadingHistory ? (
-                                <p className="settings-row-value">Loading donations...</p>
-                            ) : donationHistory.length === 0 ? (
+                            {loadingHistory && <p className="settings-row-value">Loading donations...</p>}
+                            {!loadingHistory && donationHistory.length === 0 && (
                                 <p className="settings-row-value">No donations yet.</p>
-                            ) : (
+                            )}
+                            {!loadingHistory && donationHistory.length > 0 && (
                                 <div style={{ display: 'grid', gap: '0.6rem' }}>
                                     {donationHistory.map((donation) => (
                                         <div key={donation.id} className="settings-row">
