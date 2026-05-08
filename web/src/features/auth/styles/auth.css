@@ -279,7 +279,89 @@
     }
 }
 
+/* ===== Password Requirements Box ===== */
+.password-requirements-box {
+    margin-top: 0.8rem;
+    padding: 1rem;
+    background-color: #D1E8DB;
+    border: 1px solid #A8D5B8;
+    border-radius: 10px;
+    animation: authSlideDown 0.3s ease-out;
+}
+
+.requirements-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #2D5A3D;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.requirements-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.requirements-list li {
+    font-size: 0.8rem;
+    color: #2D5A3D;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.requirement-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+}
+
+.requirement-unmet .requirement-icon {
+    background-color: rgba(45, 90, 61, 0.2);
+    color: #2D5A3D;
+}
+
+.requirement-met .requirement-icon {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.requirement-met {
+    color: #1B5E20;
+    font-weight: 500;
+}
+
+/* ===== Responsive Password Requirements ===== */
 @media (max-width: 480px) {
+    .password-requirements-box {
+        padding: 0.8rem;
+        margin-top: 0.6rem;
+    }
+
+    .requirements-title {
+        font-size: 0.75rem;
+    }
+
+    .requirements-list li {
+        font-size: 0.75rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
     .auth-form-section {
         padding: 1.5rem 1.2rem 2rem;
     }

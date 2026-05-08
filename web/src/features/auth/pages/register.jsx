@@ -149,6 +149,35 @@ const Register = () => {
                                 required
                                 autoComplete="new-password"
                             />
+                            {password && (
+                                <div className="password-requirements-box">
+                                    <div className="requirements-title">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                                            <circle cx="12" cy="12" r="10" />
+                                            <path d="M12 16v-4M12 8h.01" />
+                                        </svg>
+                                        Password Requirements
+                                    </div>
+                                    <ul className="requirements-list">
+                                        <li className={password.length >= 8 ? 'requirement-met' : 'requirement-unmet'}>
+                                            <span className="requirement-icon">{password.length >= 8 ? '✓' : '○'}</span>
+                                            At least 8 characters long
+                                        </li>
+                                        <li className={/[A-Za-z]/.test(password) ? 'requirement-met' : 'requirement-unmet'}>
+                                            <span className="requirement-icon">{/[A-Za-z]/.test(password) ? '✓' : '○'}</span>
+                                            Must contain at least one letter (A-Z or a-z)
+                                        </li>
+                                        <li className={/\d/.test(password) ? 'requirement-met' : 'requirement-unmet'}>
+                                            <span className="requirement-icon">{/\d/.test(password) ? '✓' : '○'}</span>
+                                            Must contain at least one number (0-9)
+                                        </li>
+                                        <li className={/[^A-Za-z0-9]/.test(password) ? 'requirement-met' : 'requirement-unmet'}>
+                                            <span className="requirement-icon">{/[^A-Za-z0-9]/.test(password) ? '✓' : '○'}</span>
+                                            Must contain at least one symbol
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
                         </div>
 
                         <div className="auth-input-group">
