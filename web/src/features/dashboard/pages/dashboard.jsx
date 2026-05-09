@@ -12,6 +12,7 @@ const Dashboard = () => {
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [isNewUser, setIsNewUser] = useState(() => localStorage.getItem('isNewUser') === 'true');
 
     useEffect(() => {
         const fetchSummary = async () => {
@@ -30,6 +31,12 @@ const Dashboard = () => {
         fetchSummary();
     }, []);
 
+    useEffect(() => {
+        if (isNewUser) {
+            localStorage.setItem('isNewUser', 'false');
+        }
+    }, [isNewUser]);
+
     return (
         <div className="dashboard-layout">
             <Sidebar />
@@ -44,8 +51,8 @@ const Dashboard = () => {
 
                 <div className="content-body">
                     <div className="dashboard-welcome">
-                        <h1>Welcome back, {user?.name}!</h1>
-                        <p>Explore causes, track your impact, and grow your campaigns.</p>
+                        <h1>{isNewUser ? `Welcome to Altru, ${user?.name}!` : `Welcome back, ${user?.name}!`}</h1>
+                        <p>{isNewUser ? 'Start your first campaign or support a cause that matters to you.' : 'Explore causes, track your impact, and grow your campaigns.'}</p>
                     </div>
 
                     <div className="quick-actions" style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>

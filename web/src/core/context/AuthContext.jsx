@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       if (newRefreshToken) {
         localStorage.setItem('refreshToken', newRefreshToken);
       }
+      localStorage.setItem('isNewUser', 'false');
 
       const userResponse = await usersApi.me();
       setUser(userResponse);
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }) => {
       if (newRefreshToken) {
         localStorage.setItem('refreshToken', newRefreshToken);
       }
+      localStorage.setItem('isNewUser', 'true');
       const userResponse = await usersApi.me();
       setUser(userResponse);
       return { success: true };
@@ -72,6 +74,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('isNewUser');
   };
 
   const contextValue = useMemo(

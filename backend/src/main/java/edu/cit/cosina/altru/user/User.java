@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -39,7 +40,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column(length = 1024)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)

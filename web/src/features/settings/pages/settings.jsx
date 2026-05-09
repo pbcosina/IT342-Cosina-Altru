@@ -11,6 +11,8 @@ const Settings = () => {
     const [message, setMessage] = useState('');
     const [donationHistory, setDonationHistory] = useState([]);
     const [loadingHistory, setLoadingHistory] = useState(true);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
 
     useEffect(() => {
         setForm(prev => ({
@@ -45,10 +47,55 @@ const Settings = () => {
     const onImageChange = (event) => {
         const file = event.target.files?.[0];
         if (!file) return;
+
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+            setMessage('Please upload a JPG or PNG image.');
+            return;
+        }
+
+        const maxInputBytes = 5 * 1024 * 1024;
+        if (file.size > maxInputBytes) {
+            setMessage('Image is too large. Please choose a file under 5MB.');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = () => {
-            setForm(prev => ({ ...prev, profileImageUrl: reader.result }));
+            const image = new Image();
+            image.onload = () => {
+                const maxSize = 512;
+                const scale = Math.min(maxSize / image.width, maxSize / image.height, 1);
+                const targetWidth = Math.round(image.width * scale);
+                const targetHeight = Math.round(image.height * scale);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const context = canvas.getContext('2d');
+                if (!context) {
+                    setMessage('Unable to process image.');
+                    return;
+                }
+
+                context.drawImage(image, 0, 0, targetWidth, targetHeight);
+                const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                const dataUrl = canvas.toDataURL(outputType, 0.85);
+
+                const base64Length = dataUrl.split(',')[1]?.length || 0;
+                const approxBytes = Math.floor((base64Length * 3) / 4);
+                if (approxBytes > 1_500_000) {
+                    setMessage('Image is still too large after processing. Please choose a smaller image.');
+                    return;
+                }
+
+                setForm(prev => ({ ...prev, profileImageUrl: dataUrl }));
+                setMessage('');
+            };
+            image.onerror = () => setMessage('Unable to read image.');
+            image.src = reader.result;
         };
+        reader.onerror = () => setMessage('Unable to read image.');
         reader.readAsDataURL(file);
     };
 
@@ -101,7 +148,7 @@ const Settings = () => {
                                             alt="Profile"
                                             style={{ width: 50, height: 50, borderRadius: '999px', objectFit: 'cover' }}
                                         />
-                                        <input type="file" accept="image/*" onChange={onImageChange} />
+                                        <input type="file" accept="image/jpeg,image/png" onChange={onImageChange} />
                                     </div>
                                 </div>
                                 <div className="settings-row">
@@ -114,11 +161,91 @@ const Settings = () => {
                                 </div>
                                 <div className="settings-row">
                                     <span className="settings-row-label">Current Password</span>
-                                    <input style={inputStyle} type="password" name="currentPassword" value={form.currentPassword} onChange={onChange} />
+                                    <div style={{ position: 'relative', width: '100%', maxWidth: '340px' }}>
+                                        <input
+                                            style={inputStyle}
+                                            type={showCurrentPassword ? 'text' : 'password'}
+                                            name="currentPassword"
+                                            value={form.currentPassword}
+                                            onChange={onChange}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowCurrentPassword((prev) => !prev)}
+                                            aria-pressed={showCurrentPassword}
+                                            aria-label={showCurrentPassword ? 'Hide current password' : 'Show current password'}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'inherit',
+                                                cursor: 'pointer',
+                                                padding: 0,
+                                                lineHeight: 0
+                                            }}
+                                        >
+                                            {showCurrentPassword ? (
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                            ) : (
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <path d="M17.9 17.9A10 10 0 0 1 12 19c-6.5 0-10-7-10-7a18.4 18.4 0 0 1 5-5" />
+                                                    <path d="M9.9 4.2A10 10 0 0 1 12 4c6.5 0 10 7 10 7a18.6 18.6 0 0 1-3.2 4.7" />
+                                                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                                                    <path d="M3 3l18 18" />
+                                                </svg>
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="settings-row">
                                     <span className="settings-row-label">New Password</span>
-                                    <input style={inputStyle} type="password" name="newPassword" value={form.newPassword} onChange={onChange} />
+                                    <div style={{ position: 'relative', width: '100%', maxWidth: '340px' }}>
+                                        <input
+                                            style={inputStyle}
+                                            type={showNewPassword ? 'text' : 'password'}
+                                            name="newPassword"
+                                            value={form.newPassword}
+                                            onChange={onChange}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPassword((prev) => !prev)}
+                                            aria-pressed={showNewPassword}
+                                            aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'inherit',
+                                                cursor: 'pointer',
+                                                padding: 0,
+                                                lineHeight: 0
+                                            }}
+                                        >
+                                            {showNewPassword ? (
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                            ) : (
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <path d="M17.9 17.9A10 10 0 0 1 12 19c-6.5 0-10-7-10-7a18.4 18.4 0 0 1 5-5" />
+                                                    <path d="M9.9 4.2A10 10 0 0 1 12 4c6.5 0 10 7 10 7a18.6 18.6 0 0 1-3.2 4.7" />
+                                                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                                                    <path d="M3 3l18 18" />
+                                                </svg>
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="settings-row" style={{ justifyContent: 'flex-end' }}>
                                     <button className="settings-row-action" type="submit" disabled={saving}>
