@@ -31,6 +31,9 @@ web/coverage/
 # backend (Spring Boot)
 backend/target/
 
+# root node modules
+node_modules/
+
 # gradle leftovers
 *.gradle
 .gradle/
