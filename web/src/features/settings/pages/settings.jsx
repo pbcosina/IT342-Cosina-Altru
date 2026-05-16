@@ -1,6 +1,6 @@
 import { useAuth } from '../../../core/context/AuthContext';
 import { useEffect, useState } from 'react';
-import { donationsApi, usersApi } from '../../../core/services/apiService';
+import { usersApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
 import '../styles/settings.css';
 
@@ -9,8 +9,6 @@ const Settings = () => {
     const [form, setForm] = useState({ name: '', email: '', currentPassword: '', newPassword: '', profileImageUrl: '' });
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
-    const [donationHistory, setDonationHistory] = useState([]);
-    const [loadingHistory, setLoadingHistory] = useState(true);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
@@ -22,22 +20,6 @@ const Settings = () => {
             profileImageUrl: user?.profileImageUrl || '',
         }));
     }, [user]);
-
-    useEffect(() => {
-        const fetchHistory = async () => {
-            try {
-                setLoadingHistory(true);
-                const history = await donationsApi.my();
-                setDonationHistory(Array.isArray(history) ? history : []);
-            } catch (error) {
-                setMessage(error.message || 'Failed to load donation history.');
-            } finally {
-                setLoadingHistory(false);
-            }
-        };
-
-        fetchHistory();
-    }, []);
 
     const onChange = (event) => {
         const { name, value } = event.target;
@@ -256,25 +238,6 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    <div className="settings-section">
-                        <div className="settings-section-title">Donation History</div>
-                        <div className="settings-card">
-                            {loadingHistory && <p className="settings-row-value">Loading donations...</p>}
-                            {!loadingHistory && donationHistory.length === 0 && (
-                                <p className="settings-row-value">No donations yet.</p>
-                            )}
-                            {!loadingHistory && donationHistory.length > 0 && (
-                                <div style={{ display: 'grid', gap: '0.6rem' }}>
-                                    {donationHistory.map((donation) => (
-                                        <div key={donation.id} className="settings-row">
-                                            <span className="settings-row-label">{donation.campaignTitle || `Campaign #${donation.campaignId}`}</span>
-                                            <span className="settings-row-value">₱{Number(donation.amount || 0).toLocaleString()}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
                 </div>
             </main>
         </div>

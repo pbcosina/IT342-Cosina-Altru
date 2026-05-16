@@ -6,11 +6,12 @@
 }
 
 .settings-main {
-    margin-left: 260px;
+    margin-left: var(--sidebar-width, 80px);
     flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
+    transition: margin-left 0.5s;
 }
 
 .top-header {

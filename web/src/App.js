@@ -9,6 +9,7 @@ import Causes from './features/campaigns/pages/causes';
 import CauseDetails from './features/campaigns/pages/causeDetails';
 import Fundraise from './features/campaigns/pages/fundraise';
 import Settings from './features/settings/pages/settings';
+import History from './features/settings/pages/history';
 import './App.css';
 
 function App() {
@@ -65,6 +66,14 @@ function App() {
             element={(
               <PrivateRoute>
                 <Settings />
+              </PrivateRoute>
+            )}
+          />
+          <Route
+            path="/history"
+            element={(
+              <PrivateRoute>
+                <History />
               </PrivateRoute>
             )}
           />
