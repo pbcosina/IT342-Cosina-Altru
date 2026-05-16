@@ -27,7 +27,7 @@
     background-color: #c9d1d3;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 0 2.5rem;
     position: sticky;
     top: 0;
@@ -393,4 +393,16 @@
     font-size: 1.15rem;
     color: #2d3142;
     margin-bottom: 0.4rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }

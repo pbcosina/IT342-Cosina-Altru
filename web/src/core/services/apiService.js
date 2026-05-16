@@ -47,6 +47,8 @@ export const dashboardApi = {
 export const notificationsApi = {
   my: async () => normalizeList(await apiClient.get('/notifications/me')),
   create: (payload) => apiClient.post('/notifications', payload),
+  markAllRead: () => apiClient.patch('/notifications/me/read'),
+  markRead: (id) => apiClient.patch(`/notifications/${id}/read`),
 };
 
 export const donationsApi = {

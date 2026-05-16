@@ -137,7 +137,7 @@
     cursor: pointer;
     border-top-left-radius: 50px;
     border-bottom-left-radius: 50px;
-    transition: background 0.45s ease, box-shadow 0.45s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .sidebar li.nav-item.active {

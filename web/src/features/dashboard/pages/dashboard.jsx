@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/context/AuthContext';
 import Sidebar from '../../../core/components/sidebar';
-import { campaignsApi, dashboardApi, notificationsApi } from '../../../core/services/apiService';
+import NotificationBell from '../../../core/components/notificationBell';
+import { campaignsApi, dashboardApi } from '../../../core/services/apiService';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -11,13 +12,9 @@ const Dashboard = () => {
     const [summary, setSummary] = useState(null);
     const [myCampaigns, setMyCampaigns] = useState([]);
     const [recommendedCampaigns, setRecommendedCampaigns] = useState([]);
-    const [notifications, setNotifications] = useState([]);
-    const [showNotifications, setShowNotifications] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isNewUser, setIsNewUser] = useState(() => localStorage.getItem('isNewUser') === 'true');
-    const notificationRef = useRef(null);
 
     const greeting = useMemo(() => {
         const hour = new Date().getHours();
@@ -49,18 +46,6 @@ const Dashboard = () => {
         return { label: status, className: status.toLowerCase().replace(/\s+/g, '-') };
     };
 
-    const formatRelativeTime = (value) => {
-        if (!value) return 'Just now';
-        const created = new Date(value);
-        const diffMs = Date.now() - created.getTime();
-        const diffMinutes = Math.floor(diffMs / 60000);
-        if (diffMinutes < 60) return `${Math.max(diffMinutes, 1)}m ago`;
-        const diffHours = Math.floor(diffMinutes / 60);
-        if (diffHours < 24) return `${diffHours}h ago`;
-        const diffDays = Math.floor(diffHours / 24);
-        if (diffDays === 1) return 'Yesterday';
-        return `${diffDays} days ago`;
-    };
 
     const filteredCampaigns = useMemo(() => myCampaigns, [myCampaigns]);
 
@@ -76,11 +61,10 @@ const Dashboard = () => {
                 const results = await Promise.allSettled([
                     dashboardApi.summary(),
                     campaignsApi.my({ page: 0, size: 20, sortBy: 'updatedAt', sortDirection: 'DESC' }),
-                    notificationsApi.my(),
                     campaignsApi.list({ page: 0, size: 6, sortBy: 'createdAt', sortDirection: 'DESC' }),
                 ]);
 
-                const [summaryResult, campaignsResult, notificationsResult, recommendedResult] = results;
+                const [summaryResult, campaignsResult, recommendedResult] = results;
 
                 if (summaryResult.status === 'fulfilled') {
                     setSummary(summaryResult.value);
@@ -91,21 +75,6 @@ const Dashboard = () => {
 
                 if (campaignsResult.status === 'fulfilled') {
                     setMyCampaigns(campaignsResult.value);
-                }
-
-                if (notificationsResult.status === 'fulfilled') {
-                    const mapped = (notificationsResult.value || []).map((note) => ({
-                        id: note.id,
-                        title: note.title,
-                        detail: note.message,
-                        time: formatRelativeTime(note.createdAt),
-                        type: note.type,
-                        read: note.read ?? null,
-                    }));
-                    setNotifications(mapped);
-                    const hasReadFlag = mapped.some((note) => note.read !== null);
-                    const unread = mapped.filter((note) => note.read === false).length;
-                    setUnreadCount(hasReadFlag ? unread : mapped.length);
                 }
 
                 if (recommendedResult.status === 'fulfilled') {
@@ -130,28 +99,6 @@ const Dashboard = () => {
         }
     }, [isNewUser]);
 
-    useEffect(() => {
-        if (!showNotifications) return undefined;
-        const handleClick = (event) => {
-            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-                setShowNotifications(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClick);
-        return () => document.removeEventListener('mousedown', handleClick);
-    }, [showNotifications]);
-
-    const handleNotificationsToggle = () => {
-        setShowNotifications((value) => {
-            const nextValue = !value;
-            if (nextValue) {
-                setNotifications((prev) => prev.map((note) => ({ ...note, read: true })));
-                setUnreadCount(0);
-            }
-            return nextValue;
-        });
-    };
-
     return (
         <div className="dashboard-layout">
             <Sidebar />
@@ -160,56 +107,7 @@ const Dashboard = () => {
                 <header className="top-header">
                     <div className="header-left" />
                     <div className="header-right">
-                        <div className="notification-wrapper" ref={notificationRef}>
-                            <button
-                                className="notification-bell"
-                                type="button"
-                                aria-label="View notifications"
-                                onClick={handleNotificationsToggle}
-                            >
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M12 22a2.4 2.4 0 0 0 2.4-2.4h-4.8A2.4 2.4 0 0 0 12 22zm7.2-6.4V11a7.2 7.2 0 1 0-14.4 0v4.6l-1.8 1.8v1h18v-1l-1.8-1.8z" />
-                                </svg>
-                                {unreadCount > 0 && (
-                                    <span className="notification-count">{unreadCount}</span>
-                                )}
-                            </button>
-                            {showNotifications && (
-                                <div className="notification-popover" role="dialog" aria-label="Notifications">
-                                    <div className="notification-popover-header">Notifications</div>
-                                    {!loading && unreadCount === 0 && notifications.length > 0 && (
-                                        <div className="notification-caught-up">You are all caught up</div>
-                                    )}
-                                    {loading ? (
-                                        <div className="campaigns-skeleton">
-                                            <div className="skeleton-line" />
-                                            <div className="skeleton-line" />
-                                            <div className="skeleton-line" />
-                                        </div>
-                                    ) : notifications.length ? (
-                                        <div className="notification-list">
-                                            {notifications.map((note) => (
-                                                <div key={note.id} className="notification-item">
-                                                    <div>
-                                                        <div className="notification-title">{note.title}</div>
-                                                        <div className="stat-card-sub">{note.detail}</div>
-                                                    </div>
-                                                    <span className="notification-time">{note.time}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="empty-state">
-                                            <div className="empty-icon" aria-hidden="true">🔔</div>
-                                            <div>
-                                                <div className="empty-title">No notifications yet</div>
-                                                <div className="stat-card-sub">You will see updates here as your campaigns grow.</div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                        <NotificationBell />
                         <div className="user-profile">
                             <span>{user?.name || 'User'}</span>
                             {user?.avatarUrl ? (

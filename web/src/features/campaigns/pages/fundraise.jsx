@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useAuth } from '../../../core/context/AuthContext';
 import { campaignsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
+import NotificationBell from '../../../core/components/notificationBell';
 import '../styles/fundraise.css';
 
 const CATEGORIES = [
@@ -307,9 +308,13 @@ const Fundraise = () => {
             <Sidebar />
             <main className="main-content causes-main">
                 <header className="top-header">
-                    <div className="user-profile">
-                        <span>{user?.name || 'User'}</span>
-                        <div className="user-avatar-placeholder" />
+                    <div className="header-left" />
+                    <div className="header-right">
+                        <NotificationBell />
+                        <div className="user-profile">
+                            <span>{user?.name || 'User'}</span>
+                            <div className="user-avatar-placeholder" />
+                        </div>
                     </div>
                 </header>
 

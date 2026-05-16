@@ -6,6 +6,7 @@ import edu.cit.cosina.altru.notification.dto.NotificationCreateRequest;
 import edu.cit.cosina.altru.notification.dto.NotificationResponse;
 import edu.cit.cosina.altru.user.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -42,6 +43,16 @@ public class NotificationService {
         notification.setType(type == null ? "INFO" : type.toUpperCase());
         notification.setRead(false);
         return toResponse(notificationRepository.save(notification));
+    }
+
+    @Transactional
+    public int markAllRead(User user) {
+        return notificationRepository.markAllReadByUser(user);
+    }
+
+    @Transactional
+    public boolean markRead(User user, Long id) {
+        return notificationRepository.markReadById(user, id) > 0;
     }
 
     private NotificationResponse toResponse(Notification notification) {

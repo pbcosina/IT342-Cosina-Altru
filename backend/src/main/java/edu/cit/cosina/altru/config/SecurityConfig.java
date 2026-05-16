@@ -30,7 +30,7 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins:http://localhost:3000}")
     private String corsAllowedOrigins;
 
-    @Value("${app.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")
+    @Value("${app.cors.allowed-methods:GET,POST,PUT,DELETE,PATCH,OPTIONS}")
     private String corsAllowedMethods;
 
     @Value("${app.cors.allowed-headers:Authorization,Content-Type,X-Idempotency-Key}")

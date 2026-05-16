@@ -3,6 +3,7 @@ import { useAuth } from '../../../core/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { bookmarksApi, campaignsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
+import NotificationBell from '../../../core/components/notificationBell';
 import '../styles/causes.css';
 
 const CATEGORIES = [
@@ -96,9 +97,13 @@ const Causes = () => {
             <Sidebar />
             <main className="main-content causes-main">
                 <header className="top-header">
-                    <div className="user-profile">
-                        <span>{user?.name || 'User'}</span>
-                        <div className="user-avatar-placeholder" title={user?.name} />
+                    <div className="header-left" />
+                    <div className="header-right">
+                        <NotificationBell />
+                        <div className="user-profile">
+                            <span>{user?.name || 'User'}</span>
+                            <div className="user-avatar-placeholder" title={user?.name} />
+                        </div>
                     </div>
                 </header>
 

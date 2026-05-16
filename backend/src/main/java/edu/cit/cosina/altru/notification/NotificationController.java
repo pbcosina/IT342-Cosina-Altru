@@ -34,4 +34,16 @@ public class NotificationController {
     ) {
         return ResponseEntity.ok(ApiResponse.success("Notification created", notificationService.create(user, request)));
     }
+
+    @PatchMapping("/me/read")
+    public ResponseEntity<ApiResponse<Void>> markAllRead(@AuthenticationPrincipal User user) {
+        notificationService.markAllRead(user);
+        return ResponseEntity.ok(ApiResponse.success("Notifications marked read", null));
+    }
+
+    @PatchMapping("/{id}/read")
+    public ResponseEntity<ApiResponse<Void>> markRead(@AuthenticationPrincipal User user, @PathVariable Long id) {
+        notificationService.markRead(user, id);
+        return ResponseEntity.ok(ApiResponse.success("Notification marked read", null));
+    }
 }

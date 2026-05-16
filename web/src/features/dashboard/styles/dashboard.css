@@ -77,46 +77,6 @@ body {
     gap: 1rem;
 }
 
-.notification-bell {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(159, 177, 188, 0.5);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 6px 14px rgba(45, 49, 66, 0.12);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.notification-bell svg {
-    width: 18px;
-    height: 18px;
-    fill: #2d3142;
-}
-
-.notification-bell:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 10px 20px rgba(45, 49, 66, 0.18);
-}
-
-.notification-count {
-    position: absolute;
-    top: -6px;
-    right: -4px;
-    background: #ef8354;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.1rem 0.4rem;
-    border-radius: 999px;
-    box-shadow: 0 4px 10px rgba(239, 131, 84, 0.35);
-}
-
 .user-profile {
     display: flex;
     align-items: center;

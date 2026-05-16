@@ -2,6 +2,7 @@ import { useAuth } from '../../../core/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { usersApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
+import NotificationBell from '../../../core/components/notificationBell';
 import '../styles/settings.css';
 
 const Settings = () => {
@@ -108,9 +109,13 @@ const Settings = () => {
             <Sidebar />
             <main className="settings-main">
                 <header className="top-header">
-                    <div className="user-profile">
-                        <span>{user?.name || 'User'}</span>
-                        <div className="user-avatar-placeholder" />
+                    <div className="header-left" />
+                    <div className="header-right">
+                        <NotificationBell />
+                        <div className="user-profile">
+                            <span>{user?.name || 'User'}</span>
+                            <div className="user-avatar-placeholder" />
+                        </div>
                     </div>
                 </header>
                 <div className="settings-body">
