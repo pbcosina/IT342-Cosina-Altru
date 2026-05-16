@@ -53,6 +53,20 @@
     max-width: 0;
 }
 
+.sidebar:not(.active) {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.sidebar:not(.active) .sidebar-header {
+    justify-content: center;
+    padding-right: 0;
+}
+
+.sidebar:not(.active) .menu-toggle {
+    width: 80px;
+}
+
 .menu-toggle {
     position: relative;
     width: 60px;
@@ -133,6 +147,10 @@
     gap: 0.15rem;
 }
 
+.sidebar:not(.active) li.section-label > ul {
+    justify-items: center;
+}
+
 .sidebar li.nav-item {
     cursor: pointer;
     border-top-left-radius: 50px;
@@ -143,6 +161,16 @@
 .sidebar li.nav-item.active {
     background: var(--page-bg, #f5f1e3);
     box-shadow: none;
+}
+
+.sidebar li.nav-item:not(.active):hover {
+    background: transparent;
+    box-shadow: none;
+    transform: translateX(0.5px);
+}
+
+.sidebar li.nav-item:not(.active):hover a {
+    transform: translateX(0.25px);
 }
 
 .sidebar li.nav-item.active::before {
@@ -183,8 +211,9 @@
     white-space: nowrap;
     cursor: pointer;
     padding: 0;
-    transition: color 0.4s ease;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
+
 
 .sidebar li.nav-item a .icon,
 .sidebar .bottom .nav-item .icon {
@@ -198,7 +227,13 @@
     height: 60px;
     font-size: 1.45rem;
     color: #2d3142;
-    transition: 0.5s;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.sidebar:not(.active) li.nav-item a .icon,
+.sidebar:not(.active) .bottom .nav-item .icon {
+    width: 80px;
+    min-width: 80px;
 }
 
 .sidebar li.nav-item a .text,
@@ -215,7 +250,7 @@
     font-weight: 600;
     max-width: 160px;
     overflow: hidden;
-    transition: 0.5s;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
 
@@ -242,6 +277,14 @@
     color: var(--bg);
 }
 
+.sidebar li.nav-item:hover a .icon {
+    transform: scale(1.005);
+}
+
+.sidebar li.nav-item:hover a .text {
+    transform: translateX(0.5px);
+}
+
 .sidebar li.nav-item.active a .icon::before,
 .sidebar .bottom .nav-item.active .icon::before {
     content: '';
@@ -250,7 +293,7 @@
     width: 52px;
     background: var(--bg);
     border-radius: 50%;
-    transition: 0.5s;
+    transition: transform 0.3s ease, background 0.3s ease;
     z-index: 1;
 }
 
@@ -265,6 +308,10 @@
     z-index: 10;
 }
 
+.icon-causes ion-icon {
+    transform: translateY(-1px);
+}
+
 .sidebar:not(.active) .section-label > span {
     opacity: 0;
     transform: translateX(-8px);
@@ -274,6 +321,15 @@
     position: absolute;
     bottom: 0;
     width: 100%;
+}
+
+.sidebar:not(.active) .bottom {
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar:not(.active) .bottom .nav-item {
+    width: 80px;
 }
 
 .bottom .nav-item {

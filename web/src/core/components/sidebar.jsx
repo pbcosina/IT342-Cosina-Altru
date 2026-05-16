@@ -115,7 +115,7 @@ const Sidebar = () => {
                                     style={{ '--bg': item.accent }}
                                 >
                                     <Link to={item.to}>
-                                        <span className="icon">
+                                        <span className={`icon ${item.label === 'Causes' ? 'icon-causes' : ''}`}>
                                             <ion-icon name={item.icon} />
                                         </span>
                                         <span className="text">{item.label}</span>
