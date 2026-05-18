@@ -16,6 +16,9 @@ yarn-error.log*
 .env.*
 !.env.example
 
+# firebase admin sdk
+.firebase/
+
 # root temp
 tmp/
 temp/
