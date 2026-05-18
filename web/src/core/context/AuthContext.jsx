@@ -69,6 +69,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const googleLogin = async (idToken) => {
+    try {
+      const response = await authApi.googleLogin(idToken);
+      const newToken = response.token;
+      const newRefreshToken = response.refreshToken;
+      setToken(newToken);
+      localStorage.setItem('token', newToken);
+      if (newRefreshToken) {
+        localStorage.setItem('refreshToken', newRefreshToken);
+      }
+
+      const isNewUser = Boolean(response?.newUser);
+      localStorage.setItem('isNewUser', isNewUser ? 'true' : 'false');
+
+      const userResponse = await usersApi.me();
+      setUser(userResponse);
+      return { success: true, isNewUser };
+    } catch (error) {
+      console.error('Google login failed', error);
+      return { success: false, error: error.message || 'Google login failed' };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -78,7 +101,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const contextValue = useMemo(
-    () => ({ user, token, login, register, logout, loading }),
+    () => ({ user, token, login, register, googleLogin, logout, loading }),
     [user, token, loading]
   );
 

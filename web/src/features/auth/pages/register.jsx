@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../../../core/context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../firebase';
 import shapeAuth from '../../../assets/shape-auth.png';
 import '../styles/auth.css';
 
@@ -13,7 +15,8 @@ const Register = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+    const [googleLoading, setGoogleLoading] = useState(false);
+    const { register, googleLogin } = useAuth();
     const navigate = useNavigate();
 
     const hasMinLength = password.length >= 8;
@@ -50,6 +53,28 @@ const Register = () => {
             navigate('/dashboard');
         } else {
             setError(result.error);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        setError('');
+        setGoogleLoading(true);
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const idToken = await result.user.getIdToken();
+            const authResult = await googleLogin(idToken);
+
+            if (authResult.success) {
+                navigate('/dashboard');
+            } else {
+                setError(authResult.error || 'Google sign-in failed');
+            }
+        } catch (err) {
+            console.error('Google sign-in failed:', err);
+            setError('Google sign-in failed. Please try again.');
+        } finally {
+            setGoogleLoading(false);
         }
     };
 
@@ -327,12 +352,27 @@ const Register = () => {
                         <button
                             className="auth-submit-btn"
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || googleLoading}
                             id="register-submit-btn"
                         >
                             <span>{loading ? 'Creating account...' : 'Register'}</span>
                         </button>
                     </form>
+
+                    <div className="auth-divider" aria-hidden="true">
+                        <span>or</span>
+                    </div>
+
+                    <button
+                        className="auth-google-btn"
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={loading || googleLoading}
+                    >
+                        <span className="auth-google-btn-text">
+                            {googleLoading ? 'Connecting...' : 'Continue with Google'}
+                        </span>
+                    </button>
 
                     {/* Footer */}
                     <p className="auth-form-footer">

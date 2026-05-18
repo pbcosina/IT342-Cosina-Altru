@@ -29,6 +29,7 @@ apiClient.interceptors.response.use(
     const isAuthRoute = typeof originalRequest?.url === 'string'
       && (originalRequest.url.includes('/auth/login')
         || originalRequest.url.includes('/auth/register')
+        || originalRequest.url.includes('/auth/google')
         || originalRequest.url.includes('/auth/refresh'));
 
     if (status === 401 && originalRequest && !originalRequest._retry && !isAuthRoute) {

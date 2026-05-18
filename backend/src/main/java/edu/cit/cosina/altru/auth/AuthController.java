@@ -1,6 +1,7 @@
 package edu.cit.cosina.altru.auth;
 
 import edu.cit.cosina.altru.auth.dto.AuthResponse;
+import edu.cit.cosina.altru.auth.dto.GoogleLoginRequest;
 import edu.cit.cosina.altru.auth.dto.LoginRequest;
 import edu.cit.cosina.altru.auth.dto.RefreshTokenRequest;
 import edu.cit.cosina.altru.auth.dto.RegisterRequest;
@@ -33,6 +34,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<AuthResponse>> googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+        AuthResponse response = authService.loginWithGoogle(request);
+        return ResponseEntity.ok(ApiResponse.success("Google login successful", response));
     }
 
     @PostMapping("/refresh")

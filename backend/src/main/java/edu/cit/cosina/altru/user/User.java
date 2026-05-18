@@ -48,6 +48,13 @@ public class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
     private Role role = Role.USER;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'LOCAL'")
+    private AuthProvider authProvider = AuthProvider.LOCAL;
+
+    @Column(unique = true)
+    private String providerId;
+
     @OneToMany(mappedBy = "author")
     @JsonIgnore
     private Set<Campaign> campaigns;
@@ -63,6 +70,9 @@ public class User implements UserDetails {
     void onCreate() {
         if (role == null) {
             role = Role.USER;
+        }
+        if (authProvider == null) {
+            authProvider = AuthProvider.LOCAL;
         }
         createdAt = LocalDateTime.now();
     }
@@ -110,6 +120,22 @@ public class User implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public boolean isAdmin() {
