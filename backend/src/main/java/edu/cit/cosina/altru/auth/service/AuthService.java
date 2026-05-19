@@ -16,6 +16,7 @@ import edu.cit.cosina.altru.user.UserRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,20 +32,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final FirebaseAuth firebaseAuth;
+    private final ObjectProvider<FirebaseAuth> firebaseAuthProvider;
 
     public AuthService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         JwtService jwtService,
         AuthenticationManager authenticationManager,
-        FirebaseAuth firebaseAuth
+        ObjectProvider<FirebaseAuth> firebaseAuthProvider
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
-        this.firebaseAuth = firebaseAuth;
+        this.firebaseAuthProvider = firebaseAuthProvider;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -158,6 +159,11 @@ public class AuthService {
     private FirebaseToken verifyFirebaseToken(String idToken) {
         if (idToken == null || idToken.isBlank()) {
             throw new BadRequestException("ID token is required");
+        }
+
+        FirebaseAuth firebaseAuth = firebaseAuthProvider.getIfAvailable();
+        if (firebaseAuth == null) {
+            throw new ForbiddenOperationException("Google login is not configured");
         }
 
         try {

@@ -4,7 +4,18 @@ import { campaignsApi, donationsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
 import { useAuth } from '../../../core/context/AuthContext';
 import NotificationBell from '../../../core/components/notificationBell';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import L from 'leaflet';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import '../styles/causeDetails.css';
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+});
 
 const CauseDetails = () => {
     const { id } = useParams();
@@ -76,6 +87,10 @@ const CauseDetails = () => {
 
     if (loading || !campaign) return <div className="causes-layout"><Sidebar /><main className="main-content">Loading campaign details...</main></div>;
 
+    const hasLocation = Number.isFinite(campaign.latitude) && Number.isFinite(campaign.longitude);
+    const mapCenter = hasLocation ? [campaign.latitude, campaign.longitude] : null;
+    const mapsUrl = hasLocation ? `https://www.google.com/maps?q=${campaign.latitude},${campaign.longitude}` : null;
+
     return (
         <div className="causes-layout">
             <Sidebar />
@@ -104,12 +119,52 @@ const CauseDetails = () => {
                                 <span className="cause-category">{campaign.category || 'General'}</span>
                                 <span className="cause-author-meta">by {campaign.authorName}</span>
                                 {campaign.whoFor && <span className="cause-whofor">For: {campaign.whoFor}</span>}
+                                {campaign.locationName && (
+                                    <span className="cause-location-badge">Location: {campaign.locationName}</span>
+                                )}
                             </div>
 
                             <div className="cause-story">
                                 <h2>About this campaign</h2>
                                 <p>{campaign.story}</p>
                             </div>
+
+                            {hasLocation && (
+                                <div className="cause-location">
+                                    <div className="cause-location-header">
+                                        <h2>Campaign Location</h2>
+                                        {campaign.locationName && (
+                                            <span className="cause-location-name">{campaign.locationName}</span>
+                                        )}
+                                    </div>
+                                    <div className="cause-location-map">
+                                        <MapContainer
+                                            center={mapCenter}
+                                            zoom={13}
+                                            scrollWheelZoom={false}
+                                            className="location-embed"
+                                        >
+                                            <TileLayer
+                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            />
+                                            <Marker position={mapCenter} />
+                                        </MapContainer>
+                                    </div>
+                                    <div className="cause-location-actions">
+                                        <button
+                                            type="button"
+                                            className="back-btn"
+                                            onClick={() => window.open(mapsUrl, '_blank', 'noopener,noreferrer')}
+                                        >
+                                            Open in Maps
+                                        </button>
+                                        <span className="cause-location-coords">
+                                            {campaign.latitude.toFixed(6)}, {campaign.longitude.toFixed(6)}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

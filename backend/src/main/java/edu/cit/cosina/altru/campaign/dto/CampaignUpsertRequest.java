@@ -1,6 +1,7 @@
 package edu.cit.cosina.altru.campaign.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,6 +26,16 @@ public class CampaignUpsertRequest {
 
     @NotBlank(message = "Who for is required")
     private String whoFor;
+
+    @DecimalMin(value = "-90.0", message = "Latitude must be at least -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be at most 90")
+    private Double latitude;
+
+    @DecimalMin(value = "-180.0", message = "Longitude must be at least -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be at most 180")
+    private Double longitude;
+
+    private String locationName;
 
     private String status;
 
@@ -82,5 +93,29 @@ public class CampaignUpsertRequest {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 }

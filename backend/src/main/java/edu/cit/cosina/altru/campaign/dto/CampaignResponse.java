@@ -13,6 +13,9 @@ public class CampaignResponse {
     private BigDecimal currentDonation;
     private String imageUrl;
     private String whoFor;
+    private Double latitude;
+    private Double longitude;
+    private String locationName;
     private String status;
     private Long authorId;
     private String authorName;
@@ -84,6 +87,30 @@ public class CampaignResponse {
 
     public void setWhoFor(String whoFor) {
         this.whoFor = whoFor;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public String getStatus() {

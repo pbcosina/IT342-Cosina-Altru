@@ -1,0 +1,112 @@
+.location-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.location-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.location-btn {
+    background: #2d3142;
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(45, 49, 66, 0.18);
+}
+
+.location-btn:hover {
+    background: #1a1f30;
+    transform: translateY(-2px);
+}
+
+.location-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.location-hint {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #5c677d;
+}
+
+.location-map-shell {
+    position: relative;
+    border-radius: 14px;
+    border: 1px solid rgba(159, 177, 188, 0.3);
+    overflow: hidden;
+    background: #e4eaee;
+    box-shadow: 0 8px 22px rgba(45, 49, 66, 0.1);
+    min-height: 320px;
+}
+
+.location-map {
+    height: 320px;
+    width: 100%;
+}
+
+.location-map-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: #2d3142;
+    background: linear-gradient(120deg, rgba(255,255,255,0.75), rgba(201,209,211,0.75));
+    z-index: 1;
+}
+
+.location-coordinates {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: #2d3142;
+}
+
+.location-input {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1.5px solid #c8c0b6;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    color: #2d3142;
+    background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.location-input:focus {
+    outline: none;
+    border-color: #9fb1bc;
+    box-shadow: 0 0 0 3px rgba(155, 171, 184, 0.2);
+}
+
+.location-error {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #FCA5A5;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .location-map {
+        height: 260px;
+    }
+}

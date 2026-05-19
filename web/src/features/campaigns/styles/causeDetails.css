@@ -136,7 +136,8 @@
 }
 
 .cause-category,
-.cause-whofor {
+.cause-whofor,
+.cause-location-badge {
     background: #e2e8f0;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -163,6 +164,57 @@
     line-height: 1.8;
     font-size: 1.1rem;
     white-space: pre-wrap;
+}
+
+.cause-location {
+    margin-top: 2rem;
+    background: #f7fafc;
+    border-radius: 1.2rem;
+    border: 1px solid rgba(159,177,188,0.25);
+    padding: 1.4rem 1.6rem;
+}
+
+.cause-location-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cause-location-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2d3142;
+    background: rgba(159, 177, 188, 0.2);
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+}
+
+.cause-location-map {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(159,177,188,0.3);
+    box-shadow: 0 8px 22px rgba(45,49,66,0.1);
+}
+
+.location-embed {
+    height: 260px;
+    width: 100%;
+}
+
+.cause-location-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.9rem;
+    flex-wrap: wrap;
+}
+
+.cause-location-coords {
+    font-size: 0.85rem;
+    color: #5c677d;
 }
 
 .donation-card {

@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class FirebaseConfig {
     private String projectId;
 
     @Bean
+    @ConditionalOnProperty(prefix = "app.firebase", name = "enabled", havingValue = "true")
     public FirebaseApp firebaseApp() throws IOException {
         if (!FirebaseApp.getApps().isEmpty()) {
             return FirebaseApp.getInstance();
@@ -43,6 +45,7 @@ public class FirebaseConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "app.firebase", name = "enabled", havingValue = "true")
     public FirebaseAuth firebaseAuth(FirebaseApp firebaseApp) {
         return FirebaseAuth.getInstance(firebaseApp);
     }

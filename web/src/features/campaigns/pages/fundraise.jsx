@@ -4,6 +4,7 @@ import { useAuth } from '../../../core/context/AuthContext';
 import { campaignsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
 import NotificationBell from '../../../core/components/notificationBell';
+import LocationPicker from '../components/LocationPicker';
 import '../styles/fundraise.css';
 
 const CATEGORIES = [
@@ -59,7 +60,10 @@ const initialForm = {
     category: '',
     donationGoal: '',
     imageUrl: '',
-    whoFor: ''
+    whoFor: '',
+    latitude: null,
+    longitude: null,
+    locationName: ''
 };
 
 const VIEW_KEY = 'campaignViews';
@@ -77,13 +81,13 @@ const writeViews = (views) => {
     localStorage.setItem(VIEW_KEY, JSON.stringify(views));
 };
 
-// Steps: 1=whoFor, 2=title, 3=category, 4=goal, 5=image+story
-const STEP_LABELS = ['Who For', 'Title', 'Category', 'Goal', 'Story'];
+// Steps: 1=whoFor, 2=location, 3=title, 4=category, 5=goal, 6=image+story
+const STEP_LABELS = ['Who For', 'Location', 'Title', 'Category', 'Goal', 'Story'];
 
 const StepBar = ({ currentId, formStep }) => {
     const steps = currentId
-        ? [2, 3, 4, 5]  // When editing, skip step 1
-        : [1, 2, 3, 4, 5];
+        ? [2, 3, 4, 5, 6]  // When editing, skip step 1
+        : [1, 2, 3, 4, 5, 6];
 
     return (
         <div className="step-bar">
@@ -130,7 +134,7 @@ ArrowRightIcon.propTypes = {
 const Fundraise = () => {
     const { user } = useAuth();
     const [view, setView] = useState('list');       // 'list' | 'steps' | 'preview'
-    const [formStep, setFormStep] = useState(1);    // 1–5
+    const [formStep, setFormStep] = useState(1);    // 1–6
     const [myCampaigns, setMyCampaigns] = useState([]);
     const [formData, setFormData] = useState(initialForm);
     const [currentId, setCurrentId] = useState(null);
@@ -167,7 +171,10 @@ const Fundraise = () => {
             category: cause.category,
             donationGoal: cause.donationGoal,
             imageUrl: cause.imageUrl || '',
-            whoFor: cause.whoFor || ''
+            whoFor: cause.whoFor || '',
+            latitude: cause.latitude ?? null,
+            longitude: cause.longitude ?? null,
+            locationName: cause.locationName || ''
         });
         setCurrentId(cause.id);
         setView('edit');       // <-- flat edit form, not the wizard
@@ -202,6 +209,9 @@ const Fundraise = () => {
                 donationGoal: cause.donationGoal,
                 imageUrl: cause.imageUrl,
                 whoFor: cause.whoFor,
+                latitude: cause.latitude ?? null,
+                longitude: cause.longitude ?? null,
+                locationName: cause.locationName || '',
                 status: 'COMPLETED',
             });
             setMessage('Campaign marked as completed.');
@@ -223,21 +233,27 @@ const Fundraise = () => {
             setStepError('Please select who you are raising funds for.');
             return false;
         }
-        if (formStep === 2 && !formData.title.trim()) {
+        if (formStep === 2) {
+            if (!Number.isFinite(formData.latitude) || !Number.isFinite(formData.longitude)) {
+                setStepError('Please select a campaign location on the map.');
+                return false;
+            }
+        }
+        if (formStep === 3 && !formData.title.trim()) {
             setStepError('Please enter a campaign title.');
             return false;
         }
-        if (formStep === 3 && !formData.category) {
+        if (formStep === 4 && !formData.category) {
             setStepError('Please select a category.');
             return false;
         }
-        if (formStep === 4) {
+        if (formStep === 5) {
             if (!formData.donationGoal || Number(formData.donationGoal) <= 0) {
                 setStepError('Please enter a valid donation goal greater than 0.');
                 return false;
             }
         }
-        if (formStep === 5 && !formData.story.trim()) {
+        if (formStep === 6 && !formData.story.trim()) {
             setStepError('Please tell your story.');
             return false;
         }
@@ -247,7 +263,7 @@ const Fundraise = () => {
     const handleNext = () => {
         if (!validateStep()) return;
         setStepError('');
-        if (formStep < 5) {
+        if (formStep < 6) {
             setFormStep(s => s + 1);
         } else {
             setView('preview');
@@ -267,6 +283,11 @@ const Fundraise = () => {
         setFormData(prev => ({ ...prev, whoFor: who }));
         setStepError('');
         setFormStep(2);
+    };
+
+    const handleLocationChange = ({ latitude, longitude }) => {
+        setFormData(prev => ({ ...prev, latitude, longitude }));
+        setStepError('');
     };
 
     const handleEditSubmit = (e) => {
@@ -391,7 +412,7 @@ const Fundraise = () => {
                             {formStep === 1 && (
                                 <div className="step-panel">
                                     <div className="step-heading">
-                                        <p className="form-step-label">Step 1 of 5</p>
+                                        <p className="form-step-label">Step 1 of 6</p>
                                         <h2>Who are you raising funds for?</h2>
                                         <p className="step-subtitle">This helps us tailor your campaign setup</p>
                                     </div>
@@ -423,11 +444,46 @@ const Fundraise = () => {
                                 </div>
                             )}
 
-                            {/* ── STEP 2: Campaign Title ── */}
+                            {/* ── STEP 2: Location ── */}
                             {formStep === 2 && (
                                 <div className="step-panel">
                                     <div className="step-heading">
-                                        <p className="form-step-label">Step 2 of 5</p>
+                                        <p className="form-step-label">Step 2 of 6</p>
+                                        <h2>Where is your campaign located?</h2>
+                                        <p className="step-subtitle">Help donors connect with the location you’re supporting</p>
+                                    </div>
+
+                                    <LocationPicker
+                                        value={{ latitude: formData.latitude, longitude: formData.longitude }}
+                                        onChange={handleLocationChange}
+                                        onError={(message) => setStepError(message)}
+                                    />
+
+                                    <div className="location-coordinates">
+                                        <span><strong>Latitude:</strong> {formData.latitude ?? '—'}</span>
+                                        <span><strong>Longitude:</strong> {formData.longitude ?? '—'}</span>
+                                    </div>
+
+                                    <input
+                                        className="location-input"
+                                        name="locationName"
+                                        value={formData.locationName}
+                                        onChange={handleChange}
+                                        placeholder="Optional location name (e.g., Barangay Luz, Cebu City)"
+                                    />
+
+                                    <div className="step-nav">
+                                        <button className="back-link" onClick={handleBack}><ArrowLeftIcon />Back</button>
+                                        <button className="next-btn" onClick={handleNext}>Continue<ArrowRightIcon /></button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ── STEP 3: Campaign Title ── */}
+                            {formStep === 3 && (
+                                <div className="step-panel">
+                                    <div className="step-heading">
+                                        <p className="form-step-label">Step 3 of 6</p>
                                         <h2>What's your campaign title?</h2>
                                         <p className="step-subtitle">Write a clear, compelling title that tells people what you're raising for</p>
                                     </div>
@@ -453,11 +509,11 @@ const Fundraise = () => {
                                 </div>
                             )}
 
-                            {/* ── STEP 3: Category ── */}
-                            {formStep === 3 && (
+                            {/* ── STEP 4: Category ── */}
+                            {formStep === 4 && (
                                 <div className="step-panel">
                                     <div className="step-heading">
-                                        <p className="form-step-label">Step 3 of 5</p>
+                                        <p className="form-step-label">Step 4 of 6</p>
                                         <h2>Choose a category</h2>
                                         <p className="step-subtitle">This helps donors find your campaign through search</p>
                                     </div>
@@ -503,11 +559,11 @@ const Fundraise = () => {
                                 </div>
                             )}
 
-                            {/* ── STEP 4: Donation Goal ── */}
-                            {formStep === 4 && (
+                            {/* ── STEP 5: Donation Goal ── */}
+                            {formStep === 5 && (
                                 <div className="step-panel">
                                     <div className="step-heading">
-                                        <p className="form-step-label">Step 4 of 5</p>
+                                        <p className="form-step-label">Step 5 of 6</p>
                                         <h2>Set your donation goal</h2>
                                         <p className="step-subtitle">How much do you need to raise? You can always edit this later.</p>
                                     </div>
@@ -538,11 +594,11 @@ const Fundraise = () => {
                                 </div>
                             )}
 
-                            {/* ── STEP 5: Image + Story ── */}
-                            {formStep === 5 && (
+                            {/* ── STEP 6: Image + Story ── */}
+                            {formStep === 6 && (
                                 <div className="step-panel step-panel-wide">
                                     <div className="step-heading">
-                                        <p className="form-step-label">Step 5 of 5</p>
+                                        <p className="form-step-label">Step 6 of 6</p>
                                         <h2>Add your image & story</h2>
                                         <p className="step-subtitle">A strong photo and detailed story significantly increase donations</p>
                                     </div>
@@ -680,7 +736,7 @@ const Fundraise = () => {
                     {view === 'preview' && (
                         <div className="preview-view">
                             <div className="preview-header">
-                                <button className="back-link" onClick={() => currentId ? setView('edit') : (setView('steps'), setFormStep(5))}><ArrowLeftIcon />Back to Edit</button>
+                                <button className="back-link" onClick={() => currentId ? setView('edit') : (setView('steps'), setFormStep(6))}><ArrowLeftIcon />Back to Edit</button>
                                 <h2>Preview Campaign</h2>
                             </div>
 

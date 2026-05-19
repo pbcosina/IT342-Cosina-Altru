@@ -39,6 +39,15 @@ public class Campaign {
     @Column(nullable = false)
     private String whoFor;
 
+    @Column
+    private Double latitude;
+
+    @Column
+    private Double longitude;
+
+    @Column(length = 255)
+    private String locationName;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CampaignStatus status = CampaignStatus.DRAFT;
@@ -130,6 +139,30 @@ public class Campaign {
 
     public void setWhoFor(String whoFor) {
         this.whoFor = whoFor;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public CampaignStatus getStatus() {

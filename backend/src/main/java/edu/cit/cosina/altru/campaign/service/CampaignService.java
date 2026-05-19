@@ -6,6 +6,7 @@ import edu.cit.cosina.altru.campaign.Campaign;
 import edu.cit.cosina.altru.campaign.CampaignRepository;
 import edu.cit.cosina.altru.campaign.CampaignStatus;
 import edu.cit.cosina.altru.common.api.PagedResponse;
+import edu.cit.cosina.altru.common.exception.BadRequestException;
 import edu.cit.cosina.altru.common.exception.ForbiddenOperationException;
 import edu.cit.cosina.altru.common.exception.ResourceNotFoundException;
 import edu.cit.cosina.altru.user.User;
@@ -155,6 +156,9 @@ public class CampaignService {
         response.setCurrentDonation(campaign.getCurrentDonation());
         response.setImageUrl(campaign.getImageUrl());
         response.setWhoFor(campaign.getWhoFor());
+        response.setLatitude(campaign.getLatitude());
+        response.setLongitude(campaign.getLongitude());
+        response.setLocationName(campaign.getLocationName());
         response.setStatus(campaign.getStatus().name());
         response.setAuthorId(campaign.getAuthor().getId());
         response.setAuthorName(campaign.getAuthor().getName());
@@ -178,6 +182,8 @@ public class CampaignService {
         campaign.setImageUrl(request.getImageUrl() == null ? null : request.getImageUrl().trim());
         campaign.setWhoFor(request.getWhoFor().trim());
 
+        applyLocationData(campaign, request);
+
         CampaignStatus status = CampaignStatus.DRAFT;
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
             status = CampaignStatus.valueOf(request.getStatus().trim().toUpperCase());
@@ -185,6 +191,29 @@ public class CampaignService {
         campaign.setStatus(status);
         if (campaign.getEndDate() == null) {
             campaign.setEndDate(LocalDateTime.now().plusDays(30));
+        }
+    }
+
+    private void applyLocationData(Campaign campaign, CampaignUpsertRequest request) {
+        Double latitude = request.getLatitude();
+        Double longitude = request.getLongitude();
+
+        if (latitude == null && longitude == null) {
+            campaign.setLatitude(null);
+            campaign.setLongitude(null);
+        } else if (latitude == null || longitude == null) {
+            throw new BadRequestException("Latitude and longitude must both be provided");
+        } else {
+            campaign.setLatitude(latitude);
+            campaign.setLongitude(longitude);
+        }
+
+        String locationName = request.getLocationName();
+        if (locationName == null) {
+            campaign.setLocationName(null);
+        } else {
+            String trimmed = locationName.trim();
+            campaign.setLocationName(trimmed.isBlank() ? null : trimmed);
         }
     }
 
