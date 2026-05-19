@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { useAuth } from '../../../core/context/AuthContext';
 import { campaignsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
 import NotificationBell from '../../../core/components/notificationBell';
+import ProfileMenu from '../../../core/components/profileMenu';
 import LocationPicker from '../components/LocationPicker';
 import '../styles/fundraise.css';
 
@@ -132,7 +132,6 @@ ArrowRightIcon.propTypes = {
 };
 
 const Fundraise = () => {
-    const { user } = useAuth();
     const [view, setView] = useState('list');       // 'list' | 'steps' | 'preview'
     const [formStep, setFormStep] = useState(1);    // 1–6
     const [myCampaigns, setMyCampaigns] = useState([]);
@@ -332,10 +331,7 @@ const Fundraise = () => {
                     <div className="header-left" />
                     <div className="header-right">
                         <NotificationBell />
-                        <div className="user-profile">
-                            <span>{user?.name || 'User'}</span>
-                            <div className="user-avatar-placeholder" />
-                        </div>
+                        <ProfileMenu />
                     </div>
                 </header>
 

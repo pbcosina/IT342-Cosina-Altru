@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../../core/context/AuthContext';
 import { donationsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
 import NotificationBell from '../../../core/components/notificationBell';
+import ProfileMenu from '../../../core/components/profileMenu';
 import '../styles/settings.css';
 
 const History = () => {
-    const { user } = useAuth();
     const [donationHistory, setDonationHistory] = useState([]);
     const [loadingHistory, setLoadingHistory] = useState(true);
     const [message, setMessage] = useState('');
@@ -35,10 +34,7 @@ const History = () => {
                     <div className="header-left" />
                     <div className="header-right">
                         <NotificationBell />
-                        <div className="user-profile">
-                            <span>{user?.name || 'User'}</span>
-                            <div className="user-avatar-placeholder" />
-                        </div>
+                        <ProfileMenu />
                     </div>
                 </header>
                 <div className="settings-body">

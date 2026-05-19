@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/context/AuthContext';
 import Sidebar from '../../../core/components/sidebar';
 import NotificationBell from '../../../core/components/notificationBell';
+import ProfileMenu from '../../../core/components/profileMenu';
 import { campaignsApi, dashboardApi } from '../../../core/services/apiService';
 import '../styles/dashboard.css';
 
@@ -24,15 +25,6 @@ const Dashboard = () => {
     }, []);
 
     const formatCurrency = (value) => `₱${Number(value ?? 0).toLocaleString()}`;
-
-    const userInitials = useMemo(() => {
-        const name = user?.name || 'User';
-        const parts = name.trim().split(' ').filter(Boolean);
-        if (!parts.length) return 'U';
-        const first = parts[0]?.[0] || '';
-        const last = parts.length > 1 ? parts[parts.length - 1]?.[0] : '';
-        return `${first}${last}`.toUpperCase() || 'U';
-    }, [user?.name]);
 
     const normalizeStatus = (status, campaign) => {
         if (campaign?.donationGoal && campaign?.currentDonation && Number(campaign.currentDonation) >= Number(campaign.donationGoal)) {
@@ -108,14 +100,7 @@ const Dashboard = () => {
                     <div className="header-left" />
                     <div className="header-right">
                         <NotificationBell />
-                        <div className="user-profile">
-                            <span>{user?.name || 'User'}</span>
-                            {user?.avatarUrl ? (
-                                <img src={user.avatarUrl} alt={user?.name || 'User'} className="user-avatar" />
-                            ) : (
-                                <div className="user-avatar-placeholder" aria-hidden="true">{userInitials}</div>
-                            )}
-                        </div>
+                        <ProfileMenu />
                     </div>
                 </header>
 

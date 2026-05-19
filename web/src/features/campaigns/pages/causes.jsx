@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../../core/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { bookmarksApi, campaignsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
 import NotificationBell from '../../../core/components/notificationBell';
+import ProfileMenu from '../../../core/components/profileMenu';
 import '../styles/causes.css';
 
 const CATEGORIES = [
@@ -20,7 +20,6 @@ const CATEGORIES = [
 ];
 
 const Causes = () => {
-    const { user } = useAuth();
     const navigate = useNavigate();
     const [campaigns, setCampaigns] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -100,10 +99,7 @@ const Causes = () => {
                     <div className="header-left" />
                     <div className="header-right">
                         <NotificationBell />
-                        <div className="user-profile">
-                            <span>{user?.name || 'User'}</span>
-                            <div className="user-avatar-placeholder" title={user?.name} />
-                        </div>
+                        <ProfileMenu />
                     </div>
                 </header>
 

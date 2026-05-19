@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { usersApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
 import NotificationBell from '../../../core/components/notificationBell';
+import ProfileMenu from '../../../core/components/profileMenu';
 import '../styles/settings.css';
 
 const Settings = () => {
@@ -112,10 +113,7 @@ const Settings = () => {
                     <div className="header-left" />
                     <div className="header-right">
                         <NotificationBell />
-                        <div className="user-profile">
-                            <span>{user?.name || 'User'}</span>
-                            <div className="user-avatar-placeholder" />
-                        </div>
+                        <ProfileMenu />
                     </div>
                 </header>
                 <div className="settings-body">

@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { campaignsApi, donationsApi } from '../../../core/services/apiService';
 import Sidebar from '../../../core/components/sidebar';
-import { useAuth } from '../../../core/context/AuthContext';
 import NotificationBell from '../../../core/components/notificationBell';
+import ProfileMenu from '../../../core/components/profileMenu';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -19,7 +19,6 @@ L.Icon.Default.mergeOptions({
 
 const CauseDetails = () => {
     const { id } = useParams();
-    const { user } = useAuth();
     const navigate = useNavigate();
     const [campaign, setCampaign] = useState(null);
     const [donationAmount, setDonationAmount] = useState('');
@@ -104,10 +103,7 @@ const CauseDetails = () => {
                     </button>
                     <div className="header-right">
                         <NotificationBell />
-                        <div className="user-profile">
-                            <span>{user?.name || 'User'}</span>
-                            <div className="user-avatar-placeholder" />
-                        </div>
+                        <ProfileMenu />
                     </div>
                 </header>
                 <div className="content-body cause-details-body">
